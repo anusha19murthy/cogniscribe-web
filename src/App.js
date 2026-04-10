@@ -16,8 +16,11 @@ function App() {
     setDoctor(doctorData);
   };
 
-  const handleLogout = () => {
+const handleLogout = (switchAccount = false) => {
     localStorage.removeItem('cogniscribe_doctor');
+    if (switchAccount) {
+      localStorage.removeItem('cogniscribe_auth');
+    }
     setDoctor(null);
   };
 

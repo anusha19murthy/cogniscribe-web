@@ -224,6 +224,53 @@ body {
   font-size: 14px;
 }
 
+.patient-menu-trigger {
+  position: relative;
+  margin-left: auto;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #888;
+  border-radius: 4px;
+  display: none;
+}
+
+.patient-item:hover .patient-menu-trigger {
+  display: block;
+}
+
+.patient-menu {
+  position: absolute;
+  right: 0;
+  top: 24px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  min-width: 170px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.patient-menu-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #1a1a2e;
+}
+
+.patient-menu-item:hover {
+  background: #f0f4ff;
+}
+
+.patient-menu-item.danger {
+  color: #dc2626;
+}
+
+.patient-menu-item.danger:hover {
+  background: #fef2f2;
+}
+
 /* CALENDAR */
 .calendar-section {
   padding: 16px;
