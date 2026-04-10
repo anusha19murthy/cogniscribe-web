@@ -1,0 +1,255 @@
+import React, { useState, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Navbar from './Navbar';
+
+const BACKEND = 'https://aims-production-3ac3.up.railway.app';
+
+function Dictation({ doctor, onLogout }) {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const { patient } = state || {};
+  const dateKey = state?.dateKey || (() => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+})();
+  const [noteType, setNoteType] = useState('opd');
+  const [recording, setRecording] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [error, setError] = useState('');
+  const mediaRecorder = useRef(null);
+  const audioChunks = useRef([]);
+  const audioBlob = useRef(null);
+
+  const startRecording = async () => {
+    try {
+      setError('');
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder.current = new MediaRecorder(stream);
+      audioChunks.current = [];
+      mediaRecorder.current.ondataavailable = e => audioChunks.current.push(e.data);
+      mediaRecorder.current.onstop = async () => {
+        audioBlob.current = new Blob(audioChunks.current, { type: 'audio/wav' });
+        await processAudio(audioBlob.current);
+      };
+      mediaRecorder.current.start();
+      setRecording(true);
+      setSaved(false);
+    } catch (err) {
+      setError('Microphone access denied. Please allow microphone access and try again.');
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorder.current.stop();
+    mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
+    setRecording(false);
+    setProcessing(true);
+    setHasRecorded(true);
+  };
+
+const processAudio = async (blob) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', blob, 'recording.wav');
+      
+      let text = '';
+      try {
+        const transcribeRes = await axios.post(`${BACKEND}/transcribe`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        text = transcribeRes.data.transcript;
+        setTranscript(text);
+      } catch (transcribeErr) {
+        setError(`Transcription failed: ${transcribeErr.response?.data?.detail || transcribeErr.message}`);
+        setProcessing(false);
+        return;
+      }
+
+      try {
+        const extractRes = await axios.post(`${BACKEND}/extract/${noteType}`, {
+          transcript: text,
+          patient_id: patient?.id || null
+        });
+        navigate('/note', { state: { note: extractRes.data, noteType, patient, dateKey } });
+      } catch (extractErr) {
+        setError(`Extraction failed: ${extractErr.response?.data?.detail || extractErr.message}`);
+      }
+
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleMicClick = () => {
+    if (recording) stopRecording();
+    else startRecording();
+  };
+
+  const handleNoteTypeChange = (type) => {
+    // Only allow switching if not currently recording or processing
+    if (recording || processing) return;
+    // Reset state when switching to untouched dictation
+    setNoteType(type);
+    setTranscript('');
+    setHasRecorded(false);
+    setError('');
+    setSaved(false);
+  };
+
+  const exportAudio = () => {
+    if (!audioBlob.current) return;
+    const url = URL.createObjectURL(audioBlob.current);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${patient?.name}_${noteType}_audio.wav`;
+    a.click();
+  };
+
+  if (!patient) return <div>No patient selected</div>;
+
+  return (
+    <div>
+      <Navbar doctor={doctor} onLogout={onLogout} />
+
+      <div className="main-content">
+        <div className="dictation-container">
+          <div className="patient-header">
+            <h2>{patient.name}</h2>
+            <p>{patient.age} years old, {patient.gender}</p>
+            <p className="reason">{patient.reason}</p>
+          </div>
+
+          {/* Mic button — always shown, clean state when switching tabs */}
+          <button
+            className={`mic-btn ${recording ? 'recording' : ''} ${processing ? 'processing' : ''}`}
+            onClick={handleMicClick}
+            disabled={processing}
+          >
+            {processing ? (
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+            ) : recording ? (
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="white">
+                <rect x="6" y="6" width="12" height="12" rx="2"/>
+              </svg>
+            ) : (
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            )}
+          </button>
+
+          <div className="note-type-tabs">
+            {[
+              { key: 'opd', label: 'OPD' },
+              { key: 'surgery', label: 'Surgery' },
+              { key: 'progress', label: 'Progress' },
+              { key: 'imaging', label: 'Imaging' }
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                className={`tab-btn ${noteType === key ? 'active' : ''}`}
+                onClick={() => handleNoteTypeChange(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {noteType === 'imaging' && (
+            <div className="image-upload-section">
+              <label>Attach Scan Image (optional)</label>
+              <input
+                type="file"
+                accept="image/*"
+                className="image-upload-input"
+                onChange={e => setImageFile(e.target.files[0])}
+              />
+            </div>
+          )}
+
+          {error && (
+            <div className="error-banner">{error}</div>
+          )}
+
+          {(transcript || processing) && !error && (
+            <div className="transcript-box">
+              {processing ? (
+                <div className="processing-text">AI is processing the audio...</div>
+              ) : transcript}
+            </div>
+          )}
+
+          {/* Action bar only shows after recording stopped successfully */}
+          {hasRecorded && !processing && (
+            <div className="action-bar">
+              <button className="next-patient-btn" onClick={() => navigate('/dashboard')}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'6px'}}>
+                  <polygon points="5 4 15 12 5 20 5 4"/>
+                  <line x1="19" y1="5" x2="19" y2="19"/>
+                </svg>
+                Next Patient
+              </button>
+              <div className="action-btns">
+                <button className={`save-btn ${saved ? 'saved' : ''}`} onClick={() => setSaved(true)}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'6px'}}>
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                  </svg>
+                  {saved ? 'Saved!' : 'Save'}
+                </button>
+                <div className="export-wrapper">
+                  <button className="export-btn" onClick={() => setShowExport(!showExport)}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'6px'}}>
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export
+                  </button>
+                  {showExport && (
+                    <div className="export-dropdown">
+                      {noteType === 'opd' && (
+                        <div className="export-option" onClick={exportAudio}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight:'8px'}}>
+                            <path d="M9 18V5l12-2v13"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <circle cx="18" cy="16" r="3"/>
+                          </svg>
+                          Export Audio (.wav)
+                        </div>
+                      )}
+                      <div className="export-option">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight:'8px'}}>
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                          <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Export PDF
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Dictation;
