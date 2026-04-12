@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Navbar({ doctor, onLogout }) {
+function Navbar({ doctor, onLogout, onHamburger }) {
   const navigate = useNavigate();
   const [time, setTime] = useState(new Date());
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
