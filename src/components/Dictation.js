@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './Navbar';
@@ -21,14 +21,15 @@ function Dictation({ doctor, onLogout }) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [extractedNote, setExtractedNote] = useState(null);
   const [hasRecorded, setHasRecorded] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [error, setError] = useState('');
   const [showSidebar, setShowSidebar] = useState(false);
   const [patients] = useState(() => {
-    const saved = localStorage.getItem('cogniscribe_patients');
-    return saved ? JSON.parse(saved) : {};
+    const s = localStorage.getItem('cogniscribe_patients');
+    return s ? JSON.parse(s) : {};
   });
 
   const mediaRecorder = useRef(null);
@@ -37,9 +38,20 @@ function Dictation({ doctor, onLogout }) {
 
   const todayPatients = patients[dateKey] || [];
 
+  // Fix 5 — stop recording when navigating away
+  const stopAndCleanup = () => {
+    if (mediaRecorder.current && recording) {
+      mediaRecorder.current.stream?.getTracks().forEach(track => track.stop());
+      setRecording(false);
+    }
+  };
+
   const startRecording = async () => {
     try {
       setError('');
+      setExtractedNote(null);
+      setTranscript('');
+      setHasRecorded(false);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder.current = new MediaRecorder(stream);
       audioChunks.current = [];
@@ -113,15 +125,31 @@ function Dictation({ doctor, onLogout }) {
     setHasRecorded(false);
     setError('');
     setSaved(false);
+    setExtractedNote(null);
   };
 
+  // Fix 4 — proper audio export
   const exportAudio = () => {
-    if (!audioBlob.current) return;
+    if (!audioBlob.current) {
+      alert('No audio recorded yet.');
+      return;
+    }
     const url = URL.createObjectURL(audioBlob.current);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${patient?.name}_${noteType}_audio.wav`;
+    a.download = `${patient?.name}_${noteType}_${new Date().toLocaleDateString('en-IN').replace(/\//g, '-')}.wav`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Fix 5 — navigate to another patient, stop recording first
+  const navigateToPatient = (p) => {
+    stopAndCleanup();
+    navigate(`/dictation/${p.id}`, {
+      state: { patient: p, dateKey }
+    });
   };
 
   if (!patient) return <div>No patient selected</div>;
@@ -136,14 +164,23 @@ function Dictation({ doctor, onLogout }) {
 
       <div style={{display:'flex'}}>
 
+        {/* Fix 1 & 2 — sidebar toggles, dictation preserved */}
         {showSidebar && (
           <div style={{
             width:'280px', minWidth:'280px', background:'white',
             borderRight:'1px solid #e0e0e0', height:'calc(100vh - 57px)',
-            overflowY:'auto', padding:'16px'
+            overflowY:'auto', padding:'16px', flexShrink:0
           }}>
-            <div style={{fontWeight:'600', fontSize:'14px', color:'#888', marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.5px'}}>
+            <div style={{
+              fontWeight:'600', fontSize:'14px', color:'#888',
+              marginBottom:'12px', textTransform:'uppercase', letterSpacing:'0.5px',
+              display:'flex', justifyContent:'space-between', alignItems:'center'
+            }}>
               Today's Patients
+              <span
+                onClick={() => setShowSidebar(false)}
+                style={{cursor:'pointer', fontSize:'18px', color:'#aaa', fontWeight:'400'}}
+              >✕</span>
             </div>
             {todayPatients.length === 0 ? (
               <div style={{color:'#aaa', fontSize:'14px'}}>No patients today.</div>
@@ -151,9 +188,7 @@ function Dictation({ doctor, onLogout }) {
               todayPatients.map(p => (
                 <div
                   key={p.id}
-                  onClick={() => navigate(`/dictation/${p.id}`, {
-                    state: { patient: p, dateKey }
-                  })}
+                  onClick={() => navigateToPatient(p)}
                   style={{
                     display:'flex', alignItems:'center', gap:'10px',
                     padding:'10px', borderRadius:'8px', cursor:'pointer',
@@ -170,16 +205,26 @@ function Dictation({ doctor, onLogout }) {
                 >
                   <div style={{
                     width:'32px', height:'32px', borderRadius:'50%',
-                    background:'#2563eb', color:'white', display:'flex',
-                    alignItems:'center', justifyContent:'center',
+                    background: p.id === patient.id ? '#2563eb' : '#e8eef8',
+                    color: p.id === patient.id ? 'white' : '#2563eb',
+                    display:'flex', alignItems:'center', justifyContent:'center',
                     fontSize:'14px', fontWeight:'600', flexShrink:0
                   }}>
                     {p.name.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <div style={{fontSize:'14px', fontWeight:'500', color:'#1a1a2e'}}>{p.name}</div>
+                  <div style={{flex:1, minWidth:0}}>
+                    <div style={{
+                      fontSize:'14px', fontWeight:'500', color:'#1a1a2e',
+                      whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'
+                    }}>{p.name}</div>
                     <div style={{fontSize:'12px', color:'#888'}}>{p.reason}</div>
                   </div>
+                  {p.id === patient.id && (
+                    <div style={{
+                      width:'6px', height:'6px', borderRadius:'50%',
+                      background:'#2563eb', flexShrink:0
+                    }}/>
+                  )}
                 </div>
               ))
             )}
@@ -190,13 +235,16 @@ function Dictation({ doctor, onLogout }) {
                 border:'1px solid #e0e0e0', cursor:'pointer', textAlign:'center',
                 fontSize:'13px', color:'#666'
               }}
+              onMouseEnter={e => e.currentTarget.style.background='#f8f9fa'}
+              onMouseLeave={e => e.currentTarget.style.background='white'}
             >
               ← Back to Dashboard
             </div>
           </div>
         )}
 
-        <div className="main-content" style={{flex:1}}>
+        {/* MAIN DICTATION AREA — Fix 2: always visible regardless of sidebar */}
+        <div className="main-content" style={{flex:1, minWidth:0}}>
           <div className="dictation-container">
             <div className="patient-header">
               <h2>{patient.name}</h2>
@@ -272,9 +320,7 @@ function Dictation({ doctor, onLogout }) {
                   const currentIndex = todayPatients.findIndex(p => p.id === patient.id);
                   const nextPatient = todayPatients[currentIndex + 1];
                   if (nextPatient) {
-                    navigate(`/dictation/${nextPatient.id}`, {
-                      state: { patient: nextPatient, dateKey }
-                    });
+                    navigateToPatient(nextPatient);
                   } else {
                     navigate('/dashboard', { state: { selectedDate: dateKey } });
                   }
