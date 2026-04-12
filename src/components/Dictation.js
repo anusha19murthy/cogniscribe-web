@@ -24,10 +24,9 @@ function Dictation({ doctor, onLogout }) {
   const [hasRecorded, setHasRecorded] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showExport, setShowExport] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState('');
   const [showSidebar, setShowSidebar] = useState(false);
-  const [patients, setPatients] = useState(() => {
+  const [patients] = useState(() => {
     const saved = localStorage.getItem('cogniscribe_patients');
     return saved ? JSON.parse(saved) : {};
   });
@@ -35,13 +34,6 @@ function Dictation({ doctor, onLogout }) {
   const mediaRecorder = useRef(null);
   const audioChunks = useRef([]);
   const audioBlob = useRef(null);
-
-  const getDateKey = (date) => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  };
 
   const todayPatients = patients[dateKey] || [];
 
@@ -85,19 +77,23 @@ function Dictation({ doctor, onLogout }) {
         text = transcribeRes.data.transcript;
         setTranscript(text);
       } catch (transcribeErr) {
-        setError(`Transcription failed: ${transcribeErr.response?.data?.detail || transcribeErr.message}`);
+        const errMsg = transcribeErr.response?.data?.detail || transcribeErr.message || 'Transcription error';
+        setError(`Transcription failed: ${typeof errMsg === 'object' ? JSON.stringify(errMsg) : errMsg}`);
         setProcessing(false);
         return;
       }
 
       try {
         const extractRes = await axios.post(`${BACKEND}/extract/${noteType}`, {
-          transcript: text,
+          transcript: String(text),
           patient_id: patient?.id || null
+        }, {
+          headers: { 'Content-Type': 'application/json' }
         });
         navigate('/note', { state: { note: extractRes.data, noteType, patient, dateKey } });
       } catch (extractErr) {
-        setError(`Extraction failed: ${extractErr.response?.data?.detail || extractErr.message}`);
+        const errMsg = extractErr.response?.data?.detail || extractErr.response?.data || extractErr.message || 'Extraction error';
+        setError(`Extraction failed: ${typeof errMsg === 'object' ? JSON.stringify(errMsg) : errMsg}`);
       }
 
     } finally {
@@ -140,7 +136,6 @@ function Dictation({ doctor, onLogout }) {
 
       <div style={{display:'flex'}}>
 
-        {/* SIDEBAR */}
         {showSidebar && (
           <div style={{
             width:'280px', minWidth:'280px', background:'white',
@@ -201,7 +196,6 @@ function Dictation({ doctor, onLogout }) {
           </div>
         )}
 
-        {/* MAIN DICTATION AREA */}
         <div className="main-content" style={{flex:1}}>
           <div className="dictation-container">
             <div className="patient-header">
@@ -257,7 +251,7 @@ function Dictation({ doctor, onLogout }) {
                   type="file"
                   accept="image/*"
                   className="image-upload-input"
-                  onChange={e => setImageFile(e.target.files[0])}
+                  onChange={e => e.target.files[0]}
                 />
               </div>
             )}
@@ -275,16 +269,16 @@ function Dictation({ doctor, onLogout }) {
             {hasRecorded && !processing && (
               <div className="action-bar">
                 <button className="next-patient-btn" onClick={() => {
-  const currentIndex = todayPatients.findIndex(p => p.id === patient.id);
-  const nextPatient = todayPatients[currentIndex + 1];
-  if (nextPatient) {
-    navigate(`/dictation/${nextPatient.id}`, {
-      state: { patient: nextPatient, dateKey }
-    });
-  } else {
-    navigate('/dashboard', { state: { selectedDate: dateKey } });
-  }
-}}>
+                  const currentIndex = todayPatients.findIndex(p => p.id === patient.id);
+                  const nextPatient = todayPatients[currentIndex + 1];
+                  if (nextPatient) {
+                    navigate(`/dictation/${nextPatient.id}`, {
+                      state: { patient: nextPatient, dateKey }
+                    });
+                  } else {
+                    navigate('/dashboard', { state: { selectedDate: dateKey } });
+                  }
+                }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'6px'}}>
                     <polygon points="5 4 15 12 5 20 5 4"/>
                     <line x1="19" y1="5" x2="19" y2="19"/>
