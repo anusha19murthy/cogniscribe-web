@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 
 function Dashboard({ doctor, onLogout }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [patients, setPatients] = useState(() => {
     const saved = localStorage.getItem('cogniscribe_patients');
     return saved ? JSON.parse(saved) : {};
   });
   const [activeMenu, setActiveMenu] = useState(null);
   const [editingPatient, setEditingPatient] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (location.state?.selectedDate) {
+      const parts = location.state.selectedDate.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    return new Date();
+  });
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    if (location.state?.selectedDate) {
+      const parts = location.state.selectedDate.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    return new Date();
+  });
   const [showModal, setShowModal] = useState(false);
   const [newPatient, setNewPatient] = useState({ name: '', age: '', gender: 'Male', reason: '' });
 
@@ -194,7 +207,6 @@ function Dashboard({ doctor, onLogout }) {
         </div>
       </div>
 
-      {/* EDIT PATIENT MODAL */}
       {editingPatient && (
         <div className="modal-overlay" onClick={() => setEditingPatient(null)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
@@ -252,7 +264,6 @@ function Dashboard({ doctor, onLogout }) {
         </div>
       )}
 
-      {/* REGISTER PATIENT MODAL */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>

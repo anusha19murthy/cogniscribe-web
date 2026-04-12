@@ -22,7 +22,7 @@ function Navbar({ doctor, onLogout }) {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <button className="hamburger" onClick={() => navigate('/dashboard')}>☰</button>
+        <button className="hamburger" onClick={onHamburger || (() => navigate('/dashboard'))}>☰</button>
         <div className="navbar-logo">
           <img src={require('../logo.jpeg')} alt="CogniScribe" />
           <span className="navbar-greeting">Hello, {doctor.name}!</span>

@@ -38,70 +38,181 @@ function NoteDisplay({ doctor, onLogout }) {
 
   const exportPDF = () => {
     const pdf = new jsPDF();
-    pdf.setFontSize(16);
-    pdf.text('CogniScribe — Medical Note', 20, 20);
-    pdf.setFontSize(12);
-    pdf.text(`Patient: ${patient?.name} | ${patient?.age}yr ${patient?.gender}`, 20, 35);
-    pdf.text(`Note Type: ${noteType?.toUpperCase()}`, 20, 45);
-    pdf.text(`Date: ${new Date().toLocaleDateString()}`, 20, 55);
-    pdf.line(20, 60, 190, 60);
+    const pageWidth = pdf.internal.pageSize.getWidth();
 
-    let y = 70;
-    const addLine = (label, value) => {
+    // Header background
+    pdf.setFillColor(37, 99, 235);
+    pdf.rect(0, 0, pageWidth, 28, 'F');
+
+    // Logo text
+    pdf.setFontSize(16);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('CogniScribe', 14, 12);
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('AI Medical Scribe', 14, 20);
+
+    // Date top right
+    pdf.setFontSize(9);
+    pdf.text(new Date().toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }), pageWidth - 14, 12, { align: 'right' });
+    pdf.text(noteType?.toUpperCase() + ' NOTE', pageWidth - 14, 20, { align: 'right' });
+
+    // Patient info bar
+    pdf.setFillColor(240, 244, 255);
+    pdf.rect(0, 28, pageWidth, 20, 'F');
+    pdf.setFontSize(13);
+    pdf.setTextColor(26, 26, 46);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(patient?.name || 'Patient', 14, 40);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(100, 100, 120);
+    pdf.text(`${patient?.age} years old  •  ${patient?.gender}  •  ${patient?.reason || ''}`, 14, 47);
+
+    // Divider
+    pdf.setDrawColor(220, 220, 230);
+    pdf.line(14, 52, pageWidth - 14, 52);
+
+    let y = 62;
+
+    const checkPage = () => {
+      if (y > 270) {
+        pdf.addPage();
+        y = 20;
+      }
+    };
+
+    const addSection = (title) => {
+      checkPage();
+      y += 2;
+      pdf.setFillColor(240, 244, 255);
+      pdf.rect(14, y - 5, pageWidth - 28, 10, 'F');
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(37, 99, 235);
+      pdf.text(title.toUpperCase(), 16, y + 1);
+      y += 10;
+    };
+
+    const addField = (label, value) => {
       if (!value) return;
-      if (y > 270) { pdf.addPage(); y = 20; }
+      checkPage();
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(120, 120, 140);
+      pdf.text(label.toUpperCase(), 16, y);
+      y += 5;
       pdf.setFontSize(10);
-      pdf.setTextColor(120, 120, 120);
-      pdf.text(label.toUpperCase(), 20, y);
-      y += 6;
-      pdf.setFontSize(12);
-      pdf.setTextColor(0, 0, 0);
-      const lines = pdf.splitTextToSize(String(value), 170);
-      pdf.text(lines, 20, y);
-      y += lines.length * 7 + 6;
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(26, 26, 46);
+      const lines = pdf.splitTextToSize(String(value), pageWidth - 32);
+      lines.forEach(line => {
+        checkPage();
+        pdf.text(line, 16, y);
+        y += 6;
+      });
+      y += 3;
     };
 
     if (noteType === 'opd') {
-      addLine('Chief Complaint', editedNote.chief_complaint);
-      addLine('Duration', editedNote.duration);
-      addLine('History', editedNote.history);
-      addLine('Vitals', `BP: ${editedNote.vitals?.bp || '-'} | Pulse: ${editedNote.vitals?.pulse || '-'} | Temp: ${editedNote.vitals?.temperature || '-'} | SpO2: ${editedNote.vitals?.spo2 || '-'}`);
-      addLine('Examination', editedNote.examination_findings);
-      addLine('Investigation Results', editedNote.investigation_results);
-      addLine('ECG Findings', editedNote.ecg_findings);
-      addLine('Diagnosis', editedNote.diagnosis);
+      addSection('Presenting Complaint');
+      addField('Chief Complaint', editedNote.chief_complaint);
+      addField('Duration', editedNote.duration);
+      addField('History', editedNote.history);
+
+      addSection('Vitals');
+      const vitals = [
+        editedNote.vitals?.bp ? `BP: ${editedNote.vitals.bp}` : null,
+        editedNote.vitals?.pulse ? `Pulse: ${editedNote.vitals.pulse}` : null,
+        editedNote.vitals?.temperature ? `Temp: ${editedNote.vitals.temperature}` : null,
+        editedNote.vitals?.spo2 ? `SpO2: ${editedNote.vitals.spo2}` : null
+      ].filter(Boolean).join('   |   ');
+      addField('Observations', vitals);
+
+      addSection('Examination & Investigations');
+      addField('Examination Findings', editedNote.examination_findings);
+      addField('ECG Findings', editedNote.ecg_findings);
+      addField('Investigation Results', editedNote.investigation_results);
+
+      addSection('Assessment & Plan');
+      addField('Diagnosis', editedNote.diagnosis);
       if (editedNote.medications?.length > 0) {
-        addLine('Medications', editedNote.medications.map(m => `${m.name} ${m.dose || ''} ${m.frequency || ''}`).join('\n'));
+        checkPage();
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(120, 120, 140);
+        pdf.text('MEDICATIONS', 16, y);
+        y += 5;
+        editedNote.medications.forEach((m, i) => {
+          checkPage();
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(26, 26, 46);
+          pdf.text(`${i + 1}.  ${m.name}  ${m.dose || ''}  ${m.frequency || ''}`, 16, y);
+          y += 6;
+        });
+        y += 3;
       }
-      addLine('Advice', editedNote.advice);
-      addLine('Follow Up', editedNote.follow_up);
+      addField('Advice', editedNote.advice);
+      addField('Follow Up', editedNote.follow_up);
+
     } else if (noteType === 'surgery') {
-      addLine('Procedure', editedNote.procedure_name);
-      addLine('Surgeon', editedNote.surgeon_name);
-      addLine('Anaesthesia', editedNote.anaesthesia);
-      addLine('Findings', editedNote.findings);
-      addLine('Procedure Details', editedNote.procedure_details);
-      addLine('Blood Loss', editedNote.blood_loss);
-      addLine('Complications', editedNote.complications);
-      addLine('Post-Op Plan', editedNote.post_op_plan);
+      addSection('Operative Details');
+      addField('Procedure', editedNote.procedure_name);
+      addField('Surgeon', editedNote.surgeon_name);
+      addField('Assistant Surgeon', editedNote.assistant_surgeon);
+      addField('Anaesthesia', editedNote.anaesthesia);
+      addSection('Intraoperative Findings');
+      addField('Findings', editedNote.findings);
+      addField('Procedure Details', editedNote.procedure_details);
+      addField('Estimated Blood Loss', editedNote.blood_loss);
+      addField('Complications', editedNote.complications);
+      addSection('Post Operative Plan');
+      addField('Post-Op Plan', editedNote.post_op_plan);
+
     } else if (noteType === 'progress') {
-      addLine('Day', editedNote.day);
-      addLine('Clinical Status', editedNote.clinical_status);
-      addLine('Vitals', editedNote.vitals);
-      addLine('Ventilator Settings', editedNote.ventilator_settings);
-      addLine('Investigation Results', editedNote.investigation_results);
-      addLine('Examination', editedNote.examination_findings);
-      addLine('Assessment', editedNote.assessment);
-      addLine('Plan', editedNote.plan);
+      addSection('Clinical Status');
+      addField('Day', editedNote.day);
+      addField('Clinical Status', editedNote.clinical_status);
+      addSection('Vitals & Monitoring');
+      addField('Vitals', editedNote.vitals);
+      addField('Ventilator Settings', editedNote.ventilator_settings);
+      addSection('Investigations');
+      addField('Investigation Results', editedNote.investigation_results);
+      addSection('Examination');
+      addField('Examination Findings', editedNote.examination_findings);
+      addSection('Assessment & Plan');
+      addField('Assessment', editedNote.assessment);
+      addField('Plan', editedNote.plan);
+
     } else if (noteType === 'imaging') {
-      addLine('Imaging Type', editedNote.imaging_type);
-      addLine('Clinical Indication', editedNote.clinical_indication);
-      addLine('Findings', editedNote.findings);
-      addLine('Impression', editedNote.impression);
-      addLine('Recommendation', editedNote.recommendation);
+      addSection('Study Details');
+      addField('Imaging Type', editedNote.imaging_type);
+      addField('Clinical Indication', editedNote.clinical_indication);
+      addSection('Findings');
+      addField('Findings', editedNote.findings);
+      addSection('Conclusion');
+      addField('Impression', editedNote.impression);
+      addField('Recommendation', editedNote.recommendation);
     }
 
-    pdf.save(`${patient?.name}_${noteType}_note.pdf`);
+    // Footer on every page
+    const pageCount = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(180, 180, 190);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setDrawColor(220, 220, 230);
+      pdf.line(14, 285, pageWidth - 14, 285);
+      pdf.text('Generated by CogniScribe AI Medical Scribe  •  cogniscribe.in', 14, 290);
+      pdf.text(`Page ${i} of ${pageCount}`, pageWidth - 14, 290, { align: 'right' });
+    }
+
+    pdf.save(`${patient?.name}_${noteType}_${new Date().toLocaleDateString('en-IN').replace(/\//g, '-')}.pdf`);
   };
 
   const renderField = (label, field, multiline = false) => {
@@ -216,6 +327,7 @@ function NoteDisplay({ doctor, onLogout }) {
               <h3>Operative Note</h3>
               {renderField('Procedure', 'procedure_name')}
               {renderField('Surgeon', 'surgeon_name')}
+              {renderField('Assistant Surgeon', 'assistant_surgeon')}
               {renderField('Anaesthesia', 'anaesthesia')}
               {renderField('Findings', 'findings', true)}
               {renderField('Procedure Details', 'procedure_details', true)}
@@ -251,7 +363,19 @@ function NoteDisplay({ doctor, onLogout }) {
           )}
 
           <div className="action-bar" style={{marginTop:'16px'}}>
-            <button className="next-patient-btn" onClick={() => navigate('/dashboard')}>
+            <button className="next-patient-btn" onClick={() => {
+              const allPatients = JSON.parse(localStorage.getItem('cogniscribe_patients') || '{}');
+              const datePatients = allPatients[dateKey] || [];
+              const currentIndex = datePatients.findIndex(p => p.id === patient.id);
+              const nextPatient = datePatients[currentIndex + 1];
+              if (nextPatient) {
+                navigate(`/dictation/${nextPatient.id}`, {
+                  state: { patient: nextPatient, dateKey }
+                });
+              } else {
+                navigate('/dashboard', { state: { selectedDate: dateKey } });
+              }
+            }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'6px'}}>
                 <polygon points="5 4 15 12 5 20 5 4"/>
                 <line x1="19" y1="5" x2="19" y2="19"/>

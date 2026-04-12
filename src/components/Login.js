@@ -74,7 +74,7 @@ function Login({ onLogin }) {
         <div className="login-card">
           <div className="login-logo">
             <img src={require('../logo.jpeg')} alt="CogniScribe" />
-            <p>AI Medical Scribe — Doctor First</p>
+            <p>A Doctor first AI Medical Scribe</p>
           </div>
           {error && <div className="error-banner">{error}</div>}
           <div style={{textAlign:'center', marginBottom:'20px'}}>
