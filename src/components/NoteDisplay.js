@@ -77,10 +77,10 @@ function NoteDisplay({ doctor, onLogout }) {
     pdf.setFontSize(15);
     pdf.setTextColor(255, 255, 255);
     pdf.setFont('helvetica', 'bold');
-    pdf.text(doctor.name, 14, 12);
+    pdf.text(doctor.clinic || doctor.ward || '', 14, 12);
     pdf.setFontSize(9);
     pdf.setFont('helvetica', 'normal');
-    pdf.text(doctor.clinic || doctor.ward || '', 14, 20);
+    pdf.text(doctor.name, 14, 20);
 
     pdf.setFontSize(9);
     pdf.text(new Date().toLocaleDateString('en-IN', {
