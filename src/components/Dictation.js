@@ -102,7 +102,7 @@ function Dictation({ doctor, onLogout }) {
         }, {
           headers: { 'Content-Type': 'application/json' }
         });
-        navigate('/note', { state: { note: extractRes.data, noteType, patient, dateKey } });
+        navigate('/note', { state: { note: extractRes.data, noteType, patient, dateKey, audioBlob: audioBlob.current } });
       } catch (extractErr) {
         const errMsg = extractErr.response?.data?.detail || extractErr.response?.data || extractErr.message || 'Extraction error';
         setError(`Extraction failed: ${typeof errMsg === 'object' ? JSON.stringify(errMsg) : errMsg}`);
