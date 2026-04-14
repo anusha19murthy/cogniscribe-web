@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Dictation from './components/Dictation';
 import NoteDisplay from './components/NoteDisplay';
+import PatientHistory from './components/PatientHistory';
 
 function App() {
   const [doctor, setDoctor] = useState(() => {
@@ -38,6 +39,9 @@ const handleLogout = (switchAccount = false) => {
         } />
         <Route path="/note" element={
           doctor ? <NoteDisplay doctor={doctor} onLogout={handleLogout} /> : <Navigate to="/" />
+        } />
+        <Route path="/history/:patientId" element={
+          <PatientHistory doctor={doctor} onLogout={handleLogout} />
         } />
       </Routes>
     </Router>
