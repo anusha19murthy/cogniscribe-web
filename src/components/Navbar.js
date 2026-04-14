@@ -23,10 +23,13 @@ function Navbar({ doctor, onLogout, onHamburger }) {
     <nav className="navbar">
       <div className="navbar-left">
         <button className="hamburger" onClick={onHamburger || (() => navigate('/dashboard'))}>☰</button>
-        <div className="navbar-logo">
-          <img src={require('../logo.jpeg')} alt="CogniScribe" />
-          <span className="navbar-greeting">Hello, {doctor.name}!</span>
-        </div>
+        <div className="navbar-logo"
+        onClick={() => navigate('/dashboard')}
+        style={{cursor:'pointer'}}
+        >
+  <img src={require('../logo.jpeg')} alt="CogniScribe" />
+  <span className="navbar-greeting">Hello, {doctor.name}!</span>
+</div>
       </div>
       <div className="navbar-right">
         <div className="navbar-time-block">
