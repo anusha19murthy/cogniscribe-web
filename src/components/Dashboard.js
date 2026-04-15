@@ -162,35 +162,56 @@ function Dashboard({ doctor, onLogout }) {
                 zIndex:100, maxHeight:'200px', overflowY:'auto'
               }}>
                 {searchResults.map(p => (
-                  <div
-                    key={p.id}
-                    onClick={() => addExistingPatientToToday(p)}
-                    style={{
-                      display:'flex', alignItems:'center', gap:'10px',
-                      padding:'10px 12px', cursor:'pointer',
-                      borderBottom:'1px solid #f5f5f5'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background='#f0f4ff'}
-                    onMouseLeave={e => e.currentTarget.style.background='white'}
-                  >
-                    <div style={{
-                      width:'28px', height:'28px', borderRadius:'50%',
-                      background:'#2563eb', color:'white',
-                      display:'flex', alignItems:'center', justifyContent:'center',
-                      fontSize:'12px', fontWeight:'600', flexShrink:0
-                    }}>
-                      {p.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div style={{flex:1, minWidth:0}}>
-                      <div style={{fontSize:'13px', fontWeight:'500', color:'#1a1a2e'}}>{p.name}</div>
-                      <div style={{fontSize:'11px', color:'#888'}}>{p.age}yr {p.gender} • {p.reason}</div>
-                    </div>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2">
-                      <line x1="5" y1="12" x2="19" y2="12"/>
-                      <polyline points="12 5 19 12 12 19"/>
-                    </svg>
-                  </div>
-                ))}
+  <div
+    key={p.id}
+    style={{
+      display:'flex', alignItems:'center', gap:'10px',
+      padding:'10px 12px', cursor:'pointer',
+      borderBottom:'1px solid #f5f5f5',
+      background:'white'
+    }}
+    onMouseEnter={e => e.currentTarget.style.background='#f0f4ff'}
+    onMouseLeave={e => e.currentTarget.style.background='white'}
+  >
+    <div
+      onClick={() => addExistingPatientToToday(p)}
+      style={{
+        width:'28px', height:'28px', borderRadius:'50%',
+        background:'#2563eb', color:'white',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:'12px', fontWeight:'600', flexShrink:0
+      }}
+    >
+      {p.name.charAt(0).toUpperCase()}
+    </div>
+    <div
+      onClick={() => addExistingPatientToToday(p)}
+      style={{flex:1, minWidth:0}}
+    >
+      <div style={{fontSize:'13px', fontWeight:'500', color:'#1a1a2e'}}>{p.name}</div>
+      <div style={{fontSize:'11px', color:'#888'}}>{p.age}yr {p.gender} • {p.reason}</div>
+    </div>
+    <svg
+      onClick={e => {
+        e.stopPropagation();
+        navigate(`/history/${p.id}`, {
+          state: { patient: p, dateKey: dateKey(selectedDate) }
+        });
+        setSearchQuery('');
+      }}
+      width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="#2563eb" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round"
+      style={{cursor:'pointer', flexShrink:0, padding:'2px'}}
+      title="View past notes"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/>
+      <line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>
+  </div>
+))}
               </div>
             )}
 
