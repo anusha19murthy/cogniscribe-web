@@ -27,7 +27,7 @@ function Dashboard({ doctor, onLogout }) {
   });
   const [showModal, setShowModal] = useState(false);
   const [newPatient, setNewPatient] = useState({ name: '', age: '', gender: 'Male', reason: '' });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [modalSearch, setModalSearch] = useState('');
 
   const dateKey = (date) => {
     const y = date.getFullYear();
@@ -38,16 +38,15 @@ function Dashboard({ doctor, onLogout }) {
 
   const todayPatients = patients[dateKey(selectedDate)] || [];
 
-  // Get ALL unique patients across all dates
+  // Get ALL unique patients across all dates for search
   const allPatients = Object.values(patients).flat().filter((p, index, self) =>
     index === self.findIndex(t => t.id === p.id)
   );
 
-  // Filtered search results
-  const searchResults = searchQuery.trim().length > 0
+  // Modal search results
+  const modalSearchResults = modalSearch.trim().length > 0
     ? allPatients.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.reason?.toLowerCase().includes(searchQuery.toLowerCase())
+        p.name.toLowerCase().includes(modalSearch.toLowerCase())
       )
     : [];
 
@@ -61,34 +60,30 @@ function Dashboard({ doctor, onLogout }) {
     const key = dateKey(selectedDate);
     const updated = { ...patients };
     if (!updated[key]) updated[key] = [];
-    updated[key] = [...updated[key], {
-      ...newPatient,
-      id: Date.now().toString(),
-      notes: []
-    }];
-    savePatients(updated);
+    // Check if patient already in today's list
+    const alreadyExists = updated[key].find(p =>
+      p.name.toLowerCase() === newPatient.name.toLowerCase()
+    );
+    if (!alreadyExists) {
+      updated[key] = [...updated[key], {
+        ...newPatient,
+        id: newPatient.id || Date.now().toString(),
+        notes: []
+      }];
+      savePatients(updated);
+    }
     setNewPatient({ name: '', age: '', gender: 'Male', reason: '' });
+    setModalSearch('');
     setShowModal(false);
   };
 
-  // Add existing patient to today's appointments
-  const addExistingPatientToToday = (patient) => {
-    const key = dateKey(selectedDate);
-    const updated = { ...patients };
-    if (!updated[key]) updated[key] = [];
-    const alreadyToday = updated[key].find(p => p.id === patient.id);
-    if (alreadyToday) {
-      navigate(`/dictation/${patient.id}`, {
-        state: { patient, dateKey: key }
-      });
-      return;
-    }
-    updated[key] = [...updated[key], patient];
-    savePatients(updated);
-    navigate(`/dictation/${patient.id}`, {
-      state: { patient, dateKey: key }
+  // Fill form from existing patient but clear reason
+  const fillFromExisting = (patient) => {
+    setNewPatient({
+      ...patient,
+      reason: '' // reason must be filled manually
     });
-    setSearchQuery('');
+    setModalSearch('');
   };
 
   const getDaysInMonth = (date) => {
@@ -116,115 +111,6 @@ function Dashboard({ doctor, onLogout }) {
             <button className="register-btn" onClick={() => setShowModal(true)}>
               + Register Patient
             </button>
-          </div>
-
-          {/* Search existing patients */}
-          <div style={{padding:'0 0 12px 0', position:'relative'}}>
-            <div style={{position:'relative'}}>
-              <svg
-                width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="#aaa" strokeWidth="2" strokeLinecap="round"
-                style={{position:'absolute', left:'10px', top:'50%', transform:'translateY(-50%)'}}
-              >
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-              <input
-                type="text"
-                placeholder="Search existing patients..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                style={{
-                  width:'100%', padding:'8px 10px 8px 32px',
-                  border:'1px solid #e0e0e0', borderRadius:'8px',
-                  fontSize:'13px', outline:'none', boxSizing:'border-box',
-                  background:'#f8f9fc'
-                }}
-              />
-              {searchQuery && (
-                <span
-                  onClick={() => setSearchQuery('')}
-                  style={{
-                    position:'absolute', right:'10px', top:'50%',
-                    transform:'translateY(-50%)', cursor:'pointer',
-                    color:'#aaa', fontSize:'16px'
-                  }}
-                >✕</span>
-              )}
-            </div>
-
-            {/* Search results dropdown */}
-            {searchResults.length > 0 && (
-              <div style={{
-                position:'absolute', top:'100%', left:0, right:0,
-                background:'white', border:'1px solid #e0e0e0',
-                borderRadius:'8px', boxShadow:'0 4px 20px rgba(0,0,0,0.1)',
-                zIndex:100, maxHeight:'200px', overflowY:'auto'
-              }}>
-                {searchResults.map(p => (
-  <div
-    key={p.id}
-    style={{
-      display:'flex', alignItems:'center', gap:'10px',
-      padding:'10px 12px', cursor:'pointer',
-      borderBottom:'1px solid #f5f5f5',
-      background:'white'
-    }}
-    onMouseEnter={e => e.currentTarget.style.background='#f0f4ff'}
-    onMouseLeave={e => e.currentTarget.style.background='white'}
-  >
-    <div
-      onClick={() => addExistingPatientToToday(p)}
-      style={{
-        width:'28px', height:'28px', borderRadius:'50%',
-        background:'#2563eb', color:'white',
-        display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:'12px', fontWeight:'600', flexShrink:0
-      }}
-    >
-      {p.name.charAt(0).toUpperCase()}
-    </div>
-    <div
-      onClick={() => addExistingPatientToToday(p)}
-      style={{flex:1, minWidth:0}}
-    >
-      <div style={{fontSize:'13px', fontWeight:'500', color:'#1a1a2e'}}>{p.name}</div>
-      <div style={{fontSize:'11px', color:'#888'}}>{p.age}yr {p.gender} • {p.reason}</div>
-    </div>
-    <svg
-      onClick={e => {
-        e.stopPropagation();
-        navigate(`/history/${p.id}`, {
-          state: { patient: p, dateKey: dateKey(selectedDate) }
-        });
-        setSearchQuery('');
-      }}
-      width="16" height="16" viewBox="0 0 24 24"
-      fill="none" stroke="#2563eb" strokeWidth="2"
-      strokeLinecap="round" strokeLinejoin="round"
-      style={{cursor:'pointer', flexShrink:0, padding:'2px'}}
-      title="View past notes"
-    >
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-    </svg>
-  </div>
-))}
-              </div>
-            )}
-
-            {searchQuery.trim().length > 0 && searchResults.length === 0 && (
-              <div style={{
-                position:'absolute', top:'100%', left:0, right:0,
-                background:'white', border:'1px solid #e0e0e0',
-                borderRadius:'8px', padding:'12px',
-                zIndex:100, fontSize:'13px', color:'#888', textAlign:'center'
-              }}>
-                No patients found. Register as new?
-              </div>
-            )}
           </div>
 
           <div className="patient-list">
@@ -329,7 +215,7 @@ function Dashboard({ doctor, onLogout }) {
                 else if (isToday) dayClass += ' today-unselected';
 
                 return (
-  <div key={i} className={dayClass} onClick={() => { setSelectedDate(d); setSearchQuery(''); }}>
+                  <div key={i} className={dayClass} onClick={() => setSelectedDate(d)}>
                     {day}
                     {count > 0 && <span className="patient-count-badge">{count}</span>}
                   </div>
@@ -405,20 +291,129 @@ function Dashboard({ doctor, onLogout }) {
       )}
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="modal-overlay" onClick={() => { setShowModal(false); setModalSearch(''); setNewPatient({ name: '', age: '', gender: 'Male', reason: '' }); }}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h3>Register New Patient</h3>
+
+            {/* Search existing patients */}
+            <div style={{marginBottom:'16px', position:'relative'}}>
+              <div style={{position:'relative'}}>
+                <svg
+                  width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="#aaa" strokeWidth="2" strokeLinecap="round"
+                  style={{position:'absolute', left:'10px', top:'50%', transform:'translateY(-50%)'}}
+                >
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search existing patients..."
+                  value={modalSearch}
+                  onChange={e => setModalSearch(e.target.value)}
+                  style={{
+                    width:'100%', padding:'9px 10px 9px 32px',
+                    border:'1px solid #e0e0e0', borderRadius:'8px',
+                    fontSize:'14px', outline:'none', boxSizing:'border-box',
+                    background:'#f8f9fc'
+                  }}
+                />
+                {modalSearch && (
+                  <span
+                    onClick={() => setModalSearch('')}
+                    style={{
+                      position:'absolute', right:'10px', top:'50%',
+                      transform:'translateY(-50%)', cursor:'pointer',
+                      color:'#aaa', fontSize:'16px'
+                    }}
+                  >✕</span>
+                )}
+              </div>
+
+              {/* Search results */}
+              {modalSearchResults.length > 0 && (
+                <div style={{
+                  position:'absolute', top:'100%', left:0, right:0,
+                  background:'white', border:'1px solid #e0e0e0',
+                  borderRadius:'8px', boxShadow:'0 4px 20px rgba(0,0,0,0.1)',
+                  zIndex:200, maxHeight:'180px', overflowY:'auto'
+                }}>
+                  {modalSearchResults.map(p => (
+                    <div
+                      key={p.id}
+                      onClick={() => fillFromExisting(p)}
+                      style={{
+                        display:'flex', alignItems:'center', gap:'10px',
+                        padding:'10px 12px', cursor:'pointer',
+                        borderBottom:'1px solid #f5f5f5'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background='#f0f4ff'}
+                      onMouseLeave={e => e.currentTarget.style.background='white'}
+                    >
+                      <div style={{
+                        width:'28px', height:'28px', borderRadius:'50%',
+                        background:'#2563eb', color:'white',
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontSize:'12px', fontWeight:'600', flexShrink:0
+                      }}>
+                        {p.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div style={{flex:1, minWidth:0}}>
+                        <div style={{fontSize:'13px', fontWeight:'500', color:'#1a1a2e'}}>{p.name}</div>
+                        <div style={{fontSize:'11px', color:'#888'}}>{p.age}yr {p.gender}</div>
+                      </div>
+                      <div style={{fontSize:'11px', color:'#2563eb', fontWeight:'500'}}>
+                        Fill details
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {modalSearch.trim().length > 0 && modalSearchResults.length === 0 && (
+                <div style={{
+                  marginTop:'6px', fontSize:'12px',
+                  color:'#888', textAlign:'center', padding:'6px'
+                }}>
+                  No existing patients found — fill details below to register new
+                </div>
+              )}
+            </div>
+
+            <div style={{
+              borderTop:'1px solid #f0f0f0',
+              paddingTop:'14px',
+              fontSize:'11px', color:'#aaa',
+              textTransform:'uppercase', letterSpacing:'0.5px',
+              marginBottom:'12px'
+            }}>
+              Patient Details
+            </div>
+
             <div className="form-group">
               <label>Patient Name</label>
-              <input value={newPatient.name} onChange={e => setNewPatient({...newPatient, name: e.target.value})} placeholder="Full name" />
+              <input
+                value={newPatient.name}
+                onChange={e => setNewPatient({...newPatient, name: e.target.value})}
+                placeholder="Full name"
+              />
             </div>
             <div className="form-group">
               <label>Age</label>
-              <input type="number" value={newPatient.age} onChange={e => setNewPatient({...newPatient, age: e.target.value})} placeholder="Age" />
+              <input
+                type="number"
+                value={newPatient.age}
+                onChange={e => setNewPatient({...newPatient, age: e.target.value})}
+                placeholder="Age"
+              />
             </div>
             <div className="form-group">
               <label>Gender</label>
-              <select value={newPatient.gender} onChange={e => setNewPatient({...newPatient, gender: e.target.value})} style={{width:'100%',padding:'10px',border:'1px solid #e0e0e0',borderRadius:'8px',fontSize:'15px'}}>
+              <select
+                value={newPatient.gender}
+                onChange={e => setNewPatient({...newPatient, gender: e.target.value})}
+                style={{width:'100%',padding:'10px',border:'1px solid #e0e0e0',borderRadius:'8px',fontSize:'15px'}}
+              >
                 <option>Male</option>
                 <option>Female</option>
                 <option>Other</option>
@@ -426,10 +421,29 @@ function Dashboard({ doctor, onLogout }) {
             </div>
             <div className="form-group">
               <label>Reason for Visit</label>
-              <input value={newPatient.reason} onChange={e => setNewPatient({...newPatient, reason: e.target.value})} placeholder="e.g. Fever and cold" />
+              <input
+                value={newPatient.reason}
+                onChange={e => setNewPatient({...newPatient, reason: e.target.value})}
+                placeholder="e.g. Fever and cold"
+                autoFocus={newPatient.name !== ''}
+                style={{
+                  border: newPatient.name && !newPatient.reason
+                    ? '1px solid #f59e0b'
+                    : '1px solid #e0e0e0'
+                }}
+              />
+              {newPatient.name && !newPatient.reason && (
+                <div style={{fontSize:'11px', color:'#f59e0b', marginTop:'4px'}}>
+                  Please enter reason for today's visit
+                </div>
+              )}
             </div>
             <div className="modal-actions">
-              <button className="modal-cancel" onClick={() => setShowModal(false)}>Cancel</button>
+              <button className="modal-cancel" onClick={() => {
+                setShowModal(false);
+                setModalSearch('');
+                setNewPatient({ name: '', age: '', gender: 'Male', reason: '' });
+              }}>Cancel</button>
               <button className="modal-submit" onClick={addPatient}>Register</button>
             </div>
           </div>
