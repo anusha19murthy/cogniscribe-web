@@ -329,7 +329,7 @@ function Dashboard({ doctor, onLogout }) {
                 else if (isToday) dayClass += ' today-unselected';
 
                 return (
-                  <div key={i} className={dayClass} onClick={() => setSelectedDate(d)}>
+  <div key={i} className={dayClass} onClick={() => { setSelectedDate(d); setSearchQuery(''); }}>
                     {day}
                     {count > 0 && <span className="patient-count-badge">{count}</span>}
                   </div>
