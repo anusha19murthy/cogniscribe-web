@@ -27,6 +27,7 @@ function Dashboard({ doctor, onLogout }) {
   });
   const [showModal, setShowModal] = useState(false);
   const [newPatient, setNewPatient] = useState({ name: '', age: '', gender: 'Male', reason: '' });
+  const [searchQuery, setSearchQuery] = useState('');
 
   const dateKey = (date) => {
     const y = date.getFullYear();
@@ -36,6 +37,19 @@ function Dashboard({ doctor, onLogout }) {
   };
 
   const todayPatients = patients[dateKey(selectedDate)] || [];
+
+  // Get ALL unique patients across all dates
+  const allPatients = Object.values(patients).flat().filter((p, index, self) =>
+    index === self.findIndex(t => t.id === p.id)
+  );
+
+  // Filtered search results
+  const searchResults = searchQuery.trim().length > 0
+    ? allPatients.filter(p =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.reason?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
   const savePatients = (updated) => {
     setPatients(updated);
@@ -55,6 +69,26 @@ function Dashboard({ doctor, onLogout }) {
     savePatients(updated);
     setNewPatient({ name: '', age: '', gender: 'Male', reason: '' });
     setShowModal(false);
+  };
+
+  // Add existing patient to today's appointments
+  const addExistingPatientToToday = (patient) => {
+    const key = dateKey(selectedDate);
+    const updated = { ...patients };
+    if (!updated[key]) updated[key] = [];
+    const alreadyToday = updated[key].find(p => p.id === patient.id);
+    if (alreadyToday) {
+      navigate(`/dictation/${patient.id}`, {
+        state: { patient, dateKey: key }
+      });
+      return;
+    }
+    updated[key] = [...updated[key], patient];
+    savePatients(updated);
+    navigate(`/dictation/${patient.id}`, {
+      state: { patient, dateKey: key }
+    });
+    setSearchQuery('');
   };
 
   const getDaysInMonth = (date) => {
@@ -82,6 +116,94 @@ function Dashboard({ doctor, onLogout }) {
             <button className="register-btn" onClick={() => setShowModal(true)}>
               + Register Patient
             </button>
+          </div>
+
+          {/* Search existing patients */}
+          <div style={{padding:'0 0 12px 0', position:'relative'}}>
+            <div style={{position:'relative'}}>
+              <svg
+                width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="#aaa" strokeWidth="2" strokeLinecap="round"
+                style={{position:'absolute', left:'10px', top:'50%', transform:'translateY(-50%)'}}
+              >
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search existing patients..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{
+                  width:'100%', padding:'8px 10px 8px 32px',
+                  border:'1px solid #e0e0e0', borderRadius:'8px',
+                  fontSize:'13px', outline:'none', boxSizing:'border-box',
+                  background:'#f8f9fc'
+                }}
+              />
+              {searchQuery && (
+                <span
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    position:'absolute', right:'10px', top:'50%',
+                    transform:'translateY(-50%)', cursor:'pointer',
+                    color:'#aaa', fontSize:'16px'
+                  }}
+                >✕</span>
+              )}
+            </div>
+
+            {/* Search results dropdown */}
+            {searchResults.length > 0 && (
+              <div style={{
+                position:'absolute', top:'100%', left:0, right:0,
+                background:'white', border:'1px solid #e0e0e0',
+                borderRadius:'8px', boxShadow:'0 4px 20px rgba(0,0,0,0.1)',
+                zIndex:100, maxHeight:'200px', overflowY:'auto'
+              }}>
+                {searchResults.map(p => (
+                  <div
+                    key={p.id}
+                    onClick={() => addExistingPatientToToday(p)}
+                    style={{
+                      display:'flex', alignItems:'center', gap:'10px',
+                      padding:'10px 12px', cursor:'pointer',
+                      borderBottom:'1px solid #f5f5f5'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background='#f0f4ff'}
+                    onMouseLeave={e => e.currentTarget.style.background='white'}
+                  >
+                    <div style={{
+                      width:'28px', height:'28px', borderRadius:'50%',
+                      background:'#2563eb', color:'white',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      fontSize:'12px', fontWeight:'600', flexShrink:0
+                    }}>
+                      {p.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div style={{flex:1, minWidth:0}}>
+                      <div style={{fontSize:'13px', fontWeight:'500', color:'#1a1a2e'}}>{p.name}</div>
+                      <div style={{fontSize:'11px', color:'#888'}}>{p.age}yr {p.gender} • {p.reason}</div>
+                    </div>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2">
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                      <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {searchQuery.trim().length > 0 && searchResults.length === 0 && (
+              <div style={{
+                position:'absolute', top:'100%', left:0, right:0,
+                background:'white', border:'1px solid #e0e0e0',
+                borderRadius:'8px', padding:'12px',
+                zIndex:100, fontSize:'13px', color:'#888', textAlign:'center'
+              }}>
+                No patients found. Register as new?
+              </div>
+            )}
           </div>
 
           <div className="patient-list">
@@ -144,12 +266,13 @@ function Dashboard({ doctor, onLogout }) {
                         <div
                           className="patient-menu-item"
                           onClick={e => {
-                          e.stopPropagation();
-                          navigate(`/history/${patient.id}`, {
-                            state: { patient, dateKey: dateKey(selectedDate) }
-                             });
-                          setActiveMenu(null);
-                          }}>
+                            e.stopPropagation();
+                            navigate(`/history/${patient.id}`, {
+                              state: { patient, dateKey: dateKey(selectedDate) }
+                            });
+                            setActiveMenu(null);
+                          }}
+                        >
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'8px'}}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                           View past notes
                         </div>
