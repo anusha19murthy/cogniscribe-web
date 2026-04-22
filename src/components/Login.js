@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 const WARDS = [
   'General OPD','General Ward','ICU','Emergency','Paediatrics',
@@ -17,6 +19,27 @@ function Login({ onLogin }) {
   const [customWard, setCustomWard] = useState('');
   const [isOther, setIsOther] = useState(false);
   const [isReturning] = useState(() => !!localStorage.getItem('cogniscribe_auth'));
+
+  const handleGoogleSuccess = (credentialResponse) => {
+    try {
+      const decodedInfo = jwtDecode(credentialResponse.credential);
+      const authData = {
+        name: decodedInfo.name || decodedInfo.email.split('@')[0],
+        clinic: 'CogniScribe Hub',
+        ward: 'General OPD',
+        password: 'google_oauth_no_password_needed',
+        isGoogleAuth: true,
+      };
+      localStorage.setItem('cogniscribe_auth', JSON.stringify(authData));
+      onLogin(authData);
+    } catch(err) {
+      setError('Google Sign In failed. Please try again.');
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google Sign In was unsuccessful.');
+  };
 
   const filteredWards = WARDS.filter(w =>
     w.toLowerCase().includes(wardSearch.toLowerCase())
@@ -103,6 +126,16 @@ function Login({ onLogin }) {
               </div>
             </div>
             <button type="submit" className="login-btn">Sign In</button>
+            <div style={{ margin: '20px 0', textAlign: 'center', fontSize: '14px', color: '#888' }}>
+              — OR —
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                useOneTap
+              />
+            </div>
             <button
               type="button"
               onClick={() => { localStorage.removeItem('cogniscribe_auth'); window.location.reload(); }}
@@ -216,6 +249,19 @@ function Login({ onLogin }) {
             </div>
           </div>
           <button type="submit" className="login-btn">Sign In</button>
+          
+          <div style={{ margin: '20px 0', textAlign: 'center', fontSize: '14px', color: '#888', position: 'relative' }}>
+            <span style={{ background: 'white', padding: '0 10px', position: 'relative', zIndex: 1 }}>— OR —</span>
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, borderTop: '1px solid #e0e0e0', zIndex: 0 }}></div>
+          </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap
+            />
+          </div>
         </form>
       </div>
     </div>
