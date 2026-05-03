@@ -7,7 +7,7 @@ const PARAGRAPHS = [
     highlights: [],
   },
   {
-    text: `Every consultation demands focus, precision, and care and you carry the weight of every diagnosis. Yet, hours are lost to documentation.`,
+    text: `Every consultation demands focus, precision, and care and you carry the weight of every diagnosis, and go home only to think about the ones you couldn't help enough. Yet, hours are lost to documentation.`,
     highlights: [],
   },
   {
@@ -15,7 +15,7 @@ const PARAGRAPHS = [
     highlights: ['CogniScribe exists for you', 'to give that time back to you'],
   },
   {
-    text: `Every feature we have built has been made with one person in mind. You.`,
+    text: `Every feature we have built, every line of code we have written, every decision we have made — has been made with one person in mind. You.`,
     highlights: ['has been made with one person in mind'],
   },
 ];
@@ -148,6 +148,30 @@ export default function DoctorAppreciation() {
             </motion.div>
           ))}
         </div>
+
+        {/* Pull quote */}
+        <motion.p
+          initial={{ opacity: 0, scale: 0.97 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            display: 'block',
+            maxWidth: 680,
+            margin: '48px auto',
+            textAlign: 'center',
+            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            fontWeight: 700,
+            fontStyle: 'italic',
+            color: '#4169E1',
+            lineHeight: 1.6,
+            padding: '0 40px',
+          }}
+        >
+          <span style={{ fontSize: '4rem', color: 'rgba(65,105,225,0.15)', lineHeight: 0, verticalAlign: '-0.6em', marginRight: 8 }}>"</span>
+          Built on how clinical work actually happens — not how software thinks it should.
+          <span style={{ fontSize: '4rem', color: 'rgba(65,105,225,0.15)', lineHeight: 0, verticalAlign: '-0.6em', marginLeft: 8 }}>"</span>
+        </motion.p>
 
         {/* Quote */}
         <motion.div

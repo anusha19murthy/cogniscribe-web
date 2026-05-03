@@ -130,7 +130,7 @@ export default function Caduceus() {
   });
 
   return (
-    <group ref={groupRef} scale={1.05}>
+    <group ref={groupRef} scale={0.88}>
 
       <group ref={rodRef}>
         {/* Central rod */}

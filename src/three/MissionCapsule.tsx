@@ -54,19 +54,20 @@ export default function MissionCapsule() {
     color: '#4169E1', transparent: true, opacity: 0, emissive: new THREE.Color('#4169E1'), emissiveIntensity: 0.6,
   }), []);
 
-  const topMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#4169E1', metalness: 0.5, roughness: 0.2,
-    emissive: new THREE.Color('#2D4D9F'), emissiveIntensity: 0.1,
+  const topMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: '#2563EB', metalness: 0.3, roughness: 0.1,
+    clearcoat: 1, clearcoatRoughness: 0.05,
     transparent: true, opacity: 1,
   }), []);
 
-  const bottomMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#F0F4FF', metalness: 0.3, roughness: 0.3,
+  const bottomMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: '#ffffff', metalness: 0.1, roughness: 0.05,
+    clearcoat: 1, clearcoatRoughness: 0.05,
     transparent: true, opacity: 1,
   }), []);
 
   const seamMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#CBD5FF', metalness: 0.6, roughness: 0.15,
+    color: '#93c5fd', metalness: 0.6, roughness: 0.1,
     transparent: true, opacity: 1,
   }), []);
 
@@ -140,29 +141,29 @@ export default function MissionCapsule() {
   return (
     <group ref={groupRef}>
 
-      {/* Top half — blue dome + cylinder */}
+      {/* Top half — blue dome + cylinder, cylinder bottom face sits exactly at y=0 */}
       <group ref={topRef}>
+        <mesh material={topMat} position={[0, 0.225, 0]}>
+          <cylinderGeometry args={[0.38, 0.38, 0.45, 32]} />
+        </mesh>
         <mesh material={topMat} position={[0, 0.45, 0]}>
-          <sphereGeometry args={[0.38, 24, 24, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        </mesh>
-        <mesh material={topMat} position={[0, 0.01, 0]}>
-          <cylinderGeometry args={[0.38, 0.38, 0.45, 24]} />
+          <sphereGeometry args={[0.38, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]} />
         </mesh>
       </group>
 
-      {/* Bottom half — white dome + cylinder */}
+      {/* Bottom half — white dome + cylinder, cylinder top face sits exactly at y=0 */}
       <group ref={bottomRef}>
-        <mesh material={bottomMat} position={[0, -0.45, 0]}>
-          <sphereGeometry args={[0.38, 24, 24, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]} />
+        <mesh material={bottomMat} position={[0, -0.225, 0]}>
+          <cylinderGeometry args={[0.38, 0.38, 0.45, 32]} />
         </mesh>
-        <mesh material={bottomMat} position={[0, -0.01, 0]}>
-          <cylinderGeometry args={[0.38, 0.38, 0.45, 24]} />
+        <mesh material={bottomMat} position={[0, -0.45, 0]}>
+          <sphereGeometry args={[0.38, 32, 32, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]} />
         </mesh>
       </group>
 
-      {/* Seam torus */}
+      {/* Seam band — thin cylinder at y=0, intentional color join */}
       <mesh material={seamMat} position={[0, 0, 0]}>
-        <torusGeometry args={[0.38, 0.022, 12, 48]} />
+        <cylinderGeometry args={[0.385, 0.385, 0.05, 32]} />
       </mesh>
 
       {/* Crack glow ring */}

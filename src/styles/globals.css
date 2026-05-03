@@ -291,6 +291,33 @@ p, span, a, button, li, div {
 
 .heartbeat { animation: heartbeat 1.4s ease-in-out infinite; }
 
+/* Mission/Vision icon animations */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes spinReverse { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+@keyframes targetPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0; }
+}
+@keyframes crosshairPulse {
+  0%, 100% { opacity: 0.4; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.5); }
+}
+@keyframes iconBlink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.05); }
+}
+@keyframes irisMove {
+  0%   { transform: translate(0px, 0px); }
+  25%  { transform: translate(3px, -2px); }
+  50%  { transform: translate(0px, 2px); }
+  75%  { transform: translate(-3px, -1px); }
+  100% { transform: translate(0px, 0px); }
+}
+@keyframes visionScan {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
 /* Loader */
 .loader-overlay {
   position: fixed;

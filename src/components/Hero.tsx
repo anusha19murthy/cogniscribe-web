@@ -72,20 +72,25 @@ export default function Hero() {
           fontSize: 'clamp(2.6rem, 5vw, 4.2rem)',
           color: 'var(--text)',
           lineHeight: 1.1, letterSpacing: '-0.025em',
-          margin: '0 0 22px',
+          margin: '0 0 10px',
         }}>
-          Document smarter.<br />
-          <span style={{ color: '#4169E1' }}>Care deeper.</span>
+          Revolutionize Your Clinic with CogniScribe
         </h1>
+
+        <p style={{
+          color: 'var(--text-light)',
+          fontSize: '1rem', lineHeight: 1.5,
+          maxWidth: 500, margin: '0 0 16px', fontWeight: 600,
+        }}>
+          For Clinics, Hospitals and Private Practitioners
+        </p>
 
         <p style={{
           color: 'var(--text-light)',
           fontSize: '1.05rem', lineHeight: 1.75,
           maxWidth: 500, margin: '0 0 36px', fontWeight: 500,
         }}>
-          CogniScribe transcribes your consultations in real-time, generating
-          structured SOAP notes instantly — so you can focus on your patients,
-          not paperwork.
+          Built for how clinical documentation is evolving — without changing the way you practice.
         </p>
 
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
@@ -113,10 +118,10 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, delay: 0.3 }}
-        style={{ width: '100%', height: '100vh', position: 'relative' }}
+        style={{ width: '100%', height: '80vh', position: 'relative', alignSelf: 'center' }}
       >
         <Canvas
-          camera={{ position: [0, 0, 4.5], fov: 42 }}
+          camera={{ position: [0, 0, 5.8], fov: 40 }}
           style={{ width: '100%', height: '100%', background: 'transparent' }}
           gl={{ alpha: true, antialias: true }}
         >

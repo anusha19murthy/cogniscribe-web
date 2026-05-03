@@ -5,9 +5,9 @@ const PAINS = [
   'No more burden of writing notes after every consultation.',
   'No more digging through scattered, disorganized patient records.',
   'No more losing precious time after your last patient leaves.',
-  'No more messy, unstructured dictations that make no sense.',
-  'No more switching between systems to find one patient\'s history.',
-  'No more compromise between patient time and documentation.',
+  'No more messy, unstructured dictations that make no sense the next day.',
+  'No more switching between multiple systems just to find one patient\'s history.',
+  'No more compromise between spending time with your patient and documenting their visit.',
 ];
 
 export default function ClaimTime() {
@@ -39,7 +39,7 @@ export default function ClaimTime() {
             color: 'var(--text)',
             lineHeight: 1.2, margin: 0,
           }}>
-            Claim back your time with CogniScribe
+            Claim Back Your Time with CogniScribe
           </h2>
         </motion.div>
 
@@ -78,6 +78,41 @@ export default function ClaimTime() {
               </span>
             </motion.div>
           ))}
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 48 }}>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            style={{
+              fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+              fontWeight: 700,
+              color: '#4169E1',
+              letterSpacing: '-0.01em',
+              lineHeight: 1.4,
+              margin: 0,
+            }}
+          >
+            Easier. Quicker. Built for real clinical workflows.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            style={{
+              fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+              fontWeight: 500,
+              color: '#718096',
+              fontStyle: 'italic',
+              marginTop: 12,
+              margin: '12px 0 0',
+            }}
+          >
+            Designed to match the speed and precision of real clinical decisions.
+          </motion.p>
         </div>
       </div>
     </section>
