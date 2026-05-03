@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  assetsInclude: ['**/*.pdf'],
+  server: {
+    fs: { strict: false },
+  },
   optimizeDeps: {
     include: ['three', '@react-three/fiber', '@react-three/drei', 'framer-motion', 'gsap'],
   },

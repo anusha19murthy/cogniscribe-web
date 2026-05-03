@@ -149,6 +149,23 @@ export default function DoctorAppreciation() {
           ))}
         </div>
 
+        {/* Pull quote */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ maxWidth: 680, margin: '0 auto 48px', textAlign: 'center' }}
+        >
+          <p style={{
+            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            fontWeight: 700, fontStyle: 'italic',
+            color: '#4169E1', lineHeight: 1.6, margin: 0,
+          }}>
+            "Built on how clinical work actually happens — not how software thinks it should."
+          </p>
+        </motion.div>
+
         {/* Quote */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}

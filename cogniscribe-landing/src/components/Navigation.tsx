@@ -40,7 +40,7 @@ export default function Navigation() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'none' }}>
-          <img src="/logo.png" alt="CogniScribe" style={{ height: 44, width: 'auto', objectFit: 'contain' }} />
+          <img src="/logo.png" alt="CogniScribe" style={{ height: 150, width: 'auto', objectFit: 'contain' }} />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>

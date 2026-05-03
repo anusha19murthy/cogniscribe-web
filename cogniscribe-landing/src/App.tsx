@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import Loader        from './components/Loader';
-import Navigation    from './components/Navigation';
-import CustomCursor  from './components/CustomCursor';
-import ScrollProgress from './components/ScrollProgress';
-import PortalIntro   from './components/PortalIntro';
+import Navigation       from './components/Navigation';
+import CustomCursor     from './components/CustomCursor';
+import ScrollProgress   from './components/ScrollProgress';
+import PortalIntro      from './components/PortalIntro';
+import PhilosophyDivider from './components/PhilosophyDivider';
+import SampleViewer     from './pages/SampleViewer';
 
 import './styles/globals.css';
 
@@ -38,14 +40,11 @@ function SectionFallback() {
   );
 }
 
-export default function App() {
-  const [loaded, setLoaded]         = useState(false);
+function LandingPage() {
   const [portalDone, setPortalDone] = useState(false);
   const lenisRef = useRef<Lenis | null>(null);
 
-  /* Lenis smooth scroll — init only after loader finishes */
   useEffect(() => {
-    if (!loaded) return;
     const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
     lenisRef.current = lenis;
     lenis.on('scroll', ScrollTrigger.update);
@@ -53,14 +52,11 @@ export default function App() {
     requestAnimationFrame(raf);
     gsap.ticker.lagSmoothing(0);
     return () => { lenis.destroy(); lenisRef.current = null; };
-  }, [loaded]);
+  }, []);
 
   return (
     <>
-      {!loaded && <Loader onComplete={() => setLoaded(true)} />}
-
-      {/* Portal intro — shown after loader, before landing page */}
-      {loaded && !portalDone && (
+      {!portalDone && (
         <PortalIntro onComplete={() => setPortalDone(true)} />
       )}
 
@@ -73,13 +69,25 @@ export default function App() {
         <Suspense fallback={<SectionFallback />}>
           <Hero />
           <DoctorAppreciation />
-          <ClaimTime />
+          <PhilosophyDivider />
           <RecordSaveExport />
+          <ClaimTime />
           <DictationTypes />
           <MissionVision />
           <Closing />
         </Suspense>
       </main>
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/sample/:type" element={<SampleViewer />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

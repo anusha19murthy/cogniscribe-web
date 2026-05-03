@@ -113,10 +113,10 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, delay: 0.3 }}
-        style={{ width: '100%', height: '100vh', position: 'relative' }}
+        style={{ width: '100%', height: '70vh', position: 'relative' }}
       >
         <Canvas
-          camera={{ position: [0, 0, 4.5], fov: 42 }}
+          camera={{ position: [0, 0, 7], fov: 42 }}
           style={{ width: '100%', height: '100%', background: 'transparent' }}
           gl={{ alpha: true, antialias: true }}
         >

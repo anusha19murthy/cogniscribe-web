@@ -39,7 +39,7 @@ export default function ClaimTime() {
             color: 'var(--text)',
             lineHeight: 1.2, margin: 0,
           }}>
-            Claim back your time with CogniScribe
+            Claim Back Your Time with CogniScribe
           </h2>
         </motion.div>
 
@@ -79,6 +79,28 @@ export default function ClaimTime() {
             </motion.div>
           ))}
         </div>
+
+        {/* Closing lines */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          style={{ textAlign: 'center', marginTop: 48 }}
+        >
+          <p style={{
+            color: '#4169E1', fontWeight: 700,
+            fontSize: '1.05rem', margin: '0 0 8px',
+          }}>
+            Easier. Quicker. Built for real clinical workflows.
+          </p>
+          <p style={{
+            color: '#718096', fontStyle: 'italic',
+            fontSize: '0.97rem', margin: 0, fontWeight: 500,
+          }}>
+            Designed to match the speed and precision of real clinical decisions.
+          </p>
+        </motion.div>
       </div>
     </section>
   );

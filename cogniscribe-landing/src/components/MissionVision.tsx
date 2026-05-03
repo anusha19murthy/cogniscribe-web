@@ -14,9 +14,9 @@ export default function MissionVision() {
     offset: ['start end', 'end start'],
   });
 
-  // Trigger break at 55% scroll through section
+  // Trigger break at 15% scroll through section
   useTransform(scrollYProgress, (v) => {
-    if (v >= 0.55 && !capsuleBreakState.triggered) {
+    if (v >= 0.15 && !capsuleBreakState.triggered) {
       capsuleBreakState.triggered = true;
       capsuleBreakState.onComplete = () => setBroken(true);
     }
@@ -67,8 +67,6 @@ export default function MissionVision() {
               gl={{ alpha: true, antialias: true }}
             >
               <Suspense fallback={null}>
-                <ambientLight intensity={0.8} />
-                <directionalLight position={[3, 5, 3]} intensity={1.2} />
                 <MissionCapsule />
                 <Environment preset="city" />
               </Suspense>
@@ -96,20 +94,42 @@ export default function MissionVision() {
             boxShadow: '0 8px 32px rgba(65,105,225,0.12)',
             border: '1px solid rgba(65,105,225,0.12)',
           }}>
+            <style>{`
+              @keyframes mv-spin { to { transform: rotate(360deg); } }
+              @keyframes mv-spin-rev { to { transform: rotate(-360deg); } }
+              @keyframes mv-eye-blink { 0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)} }
+              @keyframes mv-scan { 0%,100%{opacity:0.4;transform:scaleX(0.4)} 50%{opacity:1;transform:scaleX(1)} }
+            `}</style>
             <div style={{
-              width: 52, height: 52, borderRadius: '50%',
-              background: 'rgba(65,105,225,0.08)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative',
+              width: 52, height: 52,
               marginBottom: 24,
             }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#4169E1" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" fill="#4169E1"/>
-                <line x1="12" y1="3" x2="12" y2="6" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="12" y1="18" x2="12" y2="21" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="3" y1="12" x2="6" y2="12" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="18" y1="12" x2="21" y2="12" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+              {/* Rotating rings */}
+              <div style={{
+                position: 'absolute', inset: -6, borderRadius: '50%',
+                border: '1.5px dashed rgba(65,105,225,0.25)',
+                animation: 'mv-spin 4s linear infinite',
+              }} />
+              <div style={{
+                position: 'absolute', inset: -12, borderRadius: '50%',
+                border: '1px dashed rgba(65,105,225,0.12)',
+                animation: 'mv-spin-rev 6s linear infinite',
+              }} />
+              <div style={{
+                position: 'absolute', inset: 0, borderRadius: '50%',
+                background: 'rgba(65,105,225,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="#4169E1" strokeWidth="2"/>
+                  <circle cx="12" cy="12" r="3" fill="#4169E1"/>
+                  <line x1="12" y1="3" x2="12" y2="6" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="12" y1="18" x2="12" y2="21" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="3" y1="12" x2="6" y2="12" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="18" y1="12" x2="21" y2="12" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
             </div>
             <h3 style={{
               fontWeight: 700, fontSize: '1.4rem',
@@ -137,15 +157,33 @@ export default function MissionVision() {
             boxShadow: '0 8px 32px rgba(65,105,225,0.25)',
           }}>
             <div style={{
-              width: 52, height: 52, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.18)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative',
+              width: 52, height: 52,
               marginBottom: 24,
             }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke="white" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" fill="white"/>
-              </svg>
+              {/* Scanning rings */}
+              <div style={{
+                position: 'absolute', inset: -6, borderRadius: '50%',
+                border: '1.5px solid rgba(255,255,255,0.3)',
+                animation: 'mv-scan 2s ease-in-out infinite',
+              }} />
+              <div style={{
+                position: 'absolute', inset: -12, borderRadius: '50%',
+                border: '1px solid rgba(255,255,255,0.15)',
+                animation: 'mv-scan 2s ease-in-out 0.5s infinite',
+              }} />
+              <div style={{
+                position: 'absolute', inset: 0, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.18)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <div style={{ animation: 'mv-eye-blink 3s ease-in-out infinite' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke="white" strokeWidth="2"/>
+                    <circle cx="12" cy="12" r="3" fill="white"/>
+                  </svg>
+                </div>
+              </div>
             </div>
             <h3 style={{
               fontWeight: 700, fontSize: '1.4rem',
