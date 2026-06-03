@@ -50,7 +50,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
               />
               <defs>
                 <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#4169E1" />
+                  <stop offset="0%" stopColor="#2563EB" />
                   <stop offset="100%" stopColor="#8B5CF6" />
                 </linearGradient>
               </defs>
@@ -63,8 +63,8 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
                 transition={{ repeat: Infinity, duration: 1.3, ease: 'easeInOut' }}
               >
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                  <rect x="11" y="3" width="6" height="22" rx="2.5" fill="#4169E1" />
-                  <rect x="3" y="11" width="22" height="6" rx="2.5" fill="#4169E1" />
+                  <rect x="11" y="3" width="6" height="22" rx="2.5" fill="#2563EB" />
+                  <rect x="3" y="11" width="22" height="6" rx="2.5" fill="#2563EB" />
                 </svg>
               </motion.div>
             </div>
@@ -89,7 +89,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
             style={{ textAlign:'center' }}
           >
             <div style={{ fontFamily:'Inter,sans-serif', fontSize:22, fontWeight:800, color:'#1a1a2e', letterSpacing:'-0.02em' }}>
-              Cogni<span style={{ color:'#4169E1' }}>Scribe</span>
+              Cogni<span style={{ color:'#2563EB' }}>Scribe</span>
             </div>
             <div style={{ fontSize:13, color:'#64748b', marginTop:5, display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
               <IconActivity size={13} color="#64748b" />
@@ -98,7 +98,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
           </motion.div>
 
           {/* Progress % */}
-          <div style={{ fontSize:13, color:'#4169E1', fontWeight:700, fontVariantNumeric:'tabular-nums' }}>
+          <div style={{ fontSize:13, color:'#2563EB', fontWeight:700, fontVariantNumeric:'tabular-nums' }}>
             {Math.round(progress)}%
           </div>
 
@@ -107,7 +107,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
             <motion.div
               style={{
                 height:'100%', borderRadius:2,
-                background:'linear-gradient(90deg,#4169E1,#8B5CF6)',
+                background:'linear-gradient(90deg,#2563EB,#8B5CF6)',
                 width: `${progress}%`, transition:'width 0.1s linear',
               }}
             />

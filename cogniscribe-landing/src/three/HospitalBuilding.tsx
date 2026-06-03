@@ -2,7 +2,7 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-function WireBox({ position, size, color = '#4169E1', opacity = 0.6 }: {
+function WireBox({ position, size, color = '#2563EB', opacity = 0.6 }: {
   position: [number, number, number];
   size: [number, number, number];
   color?: string;
@@ -29,13 +29,13 @@ export default function HospitalBuilding() {
   return (
     <group ref={groupRef} scale={0.55}>
       {/* Main body */}
-      <WireBox position={[0, 0, 0]} size={[2, 2.5, 1.2]} color="#4169E1" opacity={0.7} />
+      <WireBox position={[0, 0, 0]} size={[2, 2.5, 1.2]} color="#2563EB" opacity={0.7} />
       {/* Upper tower */}
       <WireBox position={[0, 2.1, 0]} size={[1, 1.7, 0.8]} color="#6b8ef5" opacity={0.6} />
       {/* Left wing */}
-      <WireBox position={[-1.6, -0.3, 0]} size={[1, 1.8, 1]} color="#4169E1" opacity={0.5} />
+      <WireBox position={[-1.6, -0.3, 0]} size={[1, 1.8, 1]} color="#2563EB" opacity={0.5} />
       {/* Right wing */}
-      <WireBox position={[1.6, -0.3, 0]} size={[1, 1.8, 1]} color="#4169E1" opacity={0.5} />
+      <WireBox position={[1.6, -0.3, 0]} size={[1, 1.8, 1]} color="#2563EB" opacity={0.5} />
       {/* Rooftop element */}
       <WireBox position={[0, 3.1, 0]} size={[0.4, 0.5, 0.4]} color="#8B5CF6" opacity={0.8} />
 
@@ -60,13 +60,13 @@ export default function HospitalBuilding() {
       <WireBox position={[0, 0.9, 0.62]} size={[0.4, 0.08, 0.01]} color="#F97316" opacity={1} />
 
       {/* Entry arch */}
-      <WireBox position={[0, -0.9, 0.62]} size={[0.4, 0.5, 0.01]} color="#4169E1" opacity={0.9} />
+      <WireBox position={[0, -0.9, 0.62]} size={[0.4, 0.5, 0.01]} color="#2563EB" opacity={0.9} />
 
       {/* Floating particles */}
       {[0.9, -0.9, 1.5, -1.5].map((x, i) => (
         <mesh key={`p${i}`} position={[x, 2.0 + i * 0.3, 0.4]}>
           <sphereGeometry args={[0.04, 6, 6]} />
-          <meshBasicMaterial color="#4169E1" opacity={0.5} transparent />
+          <meshBasicMaterial color="#2563EB" opacity={0.5} transparent />
         </mesh>
       ))}
     </group>

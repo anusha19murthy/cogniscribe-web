@@ -41,8 +41,8 @@ export default function Caduceus() {
   }), []);
 
   const snake1Mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#4169E1', metalness: 0.5, roughness: 0.22,
-    emissive: new THREE.Color('#4169E1'), emissiveIntensity: 0.1,
+    color: '#2563EB', metalness: 0.5, roughness: 0.22,
+    emissive: new THREE.Color('#2563EB'), emissiveIntensity: 0.1,
     transparent: true, opacity: 1,
   }), []);
 
@@ -156,7 +156,7 @@ export default function Caduceus() {
         {[-0.75, -0.25, 0.25, 0.75].map((y, i) => (
           <mesh key={`ring${i}`} position={[0, y, 0]}>
             <torusGeometry args={[0.085, 0.017, 8, 22]} />
-            <meshStandardMaterial color="#4169E1" metalness={0.65} roughness={0.2} transparent opacity={rodMat.opacity} />
+            <meshStandardMaterial color="#2563EB" metalness={0.65} roughness={0.2} transparent opacity={rodMat.opacity} />
           </mesh>
         ))}
       </group>

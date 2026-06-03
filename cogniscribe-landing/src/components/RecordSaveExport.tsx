@@ -18,7 +18,10 @@ const STEPS = [
 
 export default function RecordSaveExport() {
   return (
-    <section style={{
+    <section 
+    id = 'how-it-works'
+    style={{
+      scrollMarginTop: '90px',
       padding: '100px 0',
       background: '#F8F9FB',
       fontFamily: "'Montserrat', sans-serif",
@@ -32,7 +35,7 @@ export default function RecordSaveExport() {
           style={{ textAlign: 'center', marginBottom: 64 }}
         >
           <div style={{
-            color: '#4169E1',
+            color: '#2563EB',
             fontSize: '0.75rem', fontWeight: 700,
             letterSpacing: '0.15em', textTransform: 'uppercase',
             marginBottom: 12,
@@ -88,11 +91,11 @@ export default function RecordSaveExport() {
                   background: 'rgba(65,105,225,0.08)',
                   marginBottom: 20,
                 }}>
-                  <s.Icon size={28} color="#4169E1" />
+                  <s.Icon size={28} color="#2563EB" />
                 </div>
 
                 <div style={{
-                  fontSize: '0.7rem', fontWeight: 700, color: '#4169E1',
+                  fontSize: '0.7rem', fontWeight: 700, color: '#2563EB',
                   letterSpacing: '0.1em', marginBottom: 10,
                 }}>
                   {s.n}

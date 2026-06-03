@@ -46,16 +46,16 @@ export default function MissionCapsule() {
   }, [particlePositions]);
 
   const particleMat = useMemo(() => new THREE.PointsMaterial({
-    color: '#4169E1', size: 0.045, transparent: true, opacity: 0,
+    color: '#2563EB', size: 0.045, transparent: true, opacity: 0,
     sizeAttenuation: true,
   }), []);
 
   const crackMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#4169E1', transparent: true, opacity: 0, emissive: new THREE.Color('#4169E1'), emissiveIntensity: 0.6,
+    color: '#2563EB', transparent: true, opacity: 0, emissive: new THREE.Color('#2563EB'), emissiveIntensity: 0.6,
   }), []);
 
   const topMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#4169E1', metalness: 0.5, roughness: 0.2,
+    color: '#2563EB', metalness: 0.5, roughness: 0.2,
     emissive: new THREE.Color('#2D4D9F'), emissiveIntensity: 0.1,
     transparent: true, opacity: 1,
   }), []);

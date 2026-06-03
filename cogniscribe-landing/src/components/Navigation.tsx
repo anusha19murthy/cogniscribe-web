@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-const NAV_LINKS = ['Features', 'How It Works', 'About'];
+const NAV_LINKS = [
+  { label: 'About', id: 'about' },
+  { label: 'How It Works', id: 'how-it-works' },
+  { label: 'Features', id: 'features' },
+];
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
@@ -18,7 +22,7 @@ export default function Navigation() {
     <>
       <motion.div style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 2,
-        background: '#4169E1', transformOrigin: 'left', scaleX,
+        background: '#2563EB', transformOrigin: 'left', scaleX,
         zIndex: 99991,
       }} />
 
@@ -45,20 +49,35 @@ export default function Navigation() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
           {NAV_LINKS.map(link => (
-            <a
-              key={link}
-              href="#"
-              style={{
-                fontSize: '0.9rem', fontWeight: 500,
-                color: '#718096', textDecoration: 'none',
-                transition: 'color 0.2s', cursor: 'none',
-              }}
-              onMouseEnter={e => (e.target as HTMLElement).style.color = '#4169E1'}
-              onMouseLeave={e => (e.target as HTMLElement).style.color = '#718096'}
-            >
-              {link}
-            </a>
-          ))}
+  <a
+  key={link.id}
+  href="#"
+  onClick={(e) => {
+    e.preventDefault();
+
+    const section = document.getElementById(link.id);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  }}
+    style={{
+      fontSize: '0.9rem',
+      fontWeight: 500,
+      color: '#718096',
+      textDecoration: 'none',
+      transition: 'color 0.2s',
+      cursor: 'none',
+    }}
+    onMouseEnter={e => (e.target as HTMLElement).style.color = '#2563EB'}
+    onMouseLeave={e => (e.target as HTMLElement).style.color = '#718096'}
+  >
+    {link.label}
+  </a>
+))}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -66,8 +85,8 @@ export default function Navigation() {
             style={{
               padding: '9px 22px', fontSize: '0.875rem', fontWeight: 600,
               fontFamily: "'Montserrat', sans-serif",
-              color: '#4169E1', background: 'transparent',
-              border: '1.5px solid #4169E1', borderRadius: 50, cursor: 'none',
+              color: '#2563EB', background: 'transparent',
+              border: '1.5px solid #2563EB', borderRadius: 50, cursor: 'none',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(65,105,225,0.06)'; }}
@@ -79,7 +98,7 @@ export default function Navigation() {
             style={{
               padding: '9px 22px', fontSize: '0.875rem', fontWeight: 700,
               fontFamily: "'Montserrat', sans-serif",
-              color: '#ffffff', background: '#4169E1',
+              color: '#ffffff', background: '#2563EB',
               border: 'none', borderRadius: 50, cursor: 'none',
               boxShadow: '0 4px 16px rgba(65,105,225,0.35)',
               transition: 'all 0.2s ease',

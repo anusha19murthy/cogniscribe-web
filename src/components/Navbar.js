@@ -28,7 +28,7 @@ function Navbar({ doctor, onLogout, onHamburger }) {
         style={{cursor:'pointer'}}
         >
   <img src={require('../logo.jpeg')} alt="CogniScribe" />
-  <span className="navbar-greeting">Hello, {doctor.name}!</span>
+  <span className="navbar-greeting">Hello, {doctor?.name ?? 'Doctor'}!</span>
 </div>
       </div>
       <div className="navbar-right">
@@ -38,8 +38,8 @@ function Navbar({ doctor, onLogout, onHamburger }) {
         </div>
         <div className="navbar-divider" />
         <div className="navbar-doctor-block">
-          <span className="navbar-doctor-name">{doctor.name}</span>
-          <span className="navbar-doctor-ward">{doctor.ward}</span>
+          <span className="navbar-doctor-name">{doctor?.name ?? ''}</span>
+          <span className="navbar-doctor-ward">{doctor?.ward ?? ''}</span>
         </div>
         <div style={{position:'relative'}}>
           <button className="logout-btn" onClick={() => setShowLogoutMenu(!showLogoutMenu)}>

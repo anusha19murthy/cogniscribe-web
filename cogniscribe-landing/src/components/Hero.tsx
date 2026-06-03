@@ -51,7 +51,7 @@ export default function Hero() {
           display: 'inline-flex', alignItems: 'center', gap: 8,
           background: 'rgba(65,105,225,0.08)',
           border: '1px solid rgba(65,105,225,0.2)',
-          color: '#4169E1', borderRadius: 50,
+          color: '#2563EB', borderRadius: 50,
           padding: '5px 16px', fontSize: '0.78rem', fontWeight: 600,
           marginBottom: 24, letterSpacing: '0.04em',
         }}>
@@ -75,7 +75,7 @@ export default function Hero() {
           margin: '0 0 22px',
         }}>
           Document smarter.<br />
-          <span style={{ color: '#4169E1' }}>Care deeper.</span>
+          <span style={{ color: '#2563EB' }}>Care deeper.</span>
         </h1>
 
         <p style={{
@@ -84,7 +84,7 @@ export default function Hero() {
           maxWidth: 500, margin: '0 0 36px', fontWeight: 500,
         }}>
           CogniScribe transcribes your consultations in real-time, generating
-          structured SOAP notes instantly — so you can focus on your patients,
+          structured SOAP notes instantly so you can focus on your patients,
           not paperwork.
         </p>
 
@@ -97,7 +97,7 @@ export default function Hero() {
           </div>
           <div ref={btn2Ref} style={{ display: 'inline-block' }}>
             <button className="btn-capsule btn-secondary">
-              <IconPlay size={14} color="#4169E1" />
+              <IconPlay size={14} color="#2563EB" />
               Watch Demo
             </button>
           </div>

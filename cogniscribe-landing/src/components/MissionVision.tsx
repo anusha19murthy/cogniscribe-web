@@ -41,7 +41,7 @@ export default function MissionVision() {
           style={{ textAlign: 'center', marginBottom: 56 }}
         >
           <div style={{
-            color: '#4169E1',
+            color: '#2563EB',
             fontSize: '0.75rem', fontWeight: 700,
             letterSpacing: '0.15em', textTransform: 'uppercase',
             marginBottom: 12,
@@ -103,12 +103,12 @@ export default function MissionVision() {
               marginBottom: 24,
             }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#4169E1" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" fill="#4169E1"/>
-                <line x1="12" y1="3" x2="12" y2="6" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="12" y1="18" x2="12" y2="21" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="3" y1="12" x2="6" y2="12" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="18" y1="12" x2="21" y2="12" stroke="#4169E1" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="12" cy="12" r="9" stroke="#2563EB" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="3" fill="#2563EB"/>
+                <line x1="12" y1="3" x2="12" y2="6" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="12" y1="18" x2="12" y2="21" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="3" y1="12" x2="6" y2="12" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="18" y1="12" x2="21" y2="12" stroke="#2563EB" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
             <h3 style={{
@@ -126,12 +126,12 @@ export default function MissionVision() {
               by building fast, reliable, and intelligent systems that integrate seamlessly
               into a doctor's natural workflow.
             </p>
-            <div style={{ width: 40, height: 3, background: '#4169E1', borderRadius: 2 }} />
+            <div style={{ width: 40, height: 3, background: '#2563EB', borderRadius: 2 }} />
           </div>
 
           {/* Vision */}
           <div style={{
-            background: '#4169E1',
+            background: '#2563EB',
             borderRadius: 20,
             padding: 44,
             boxShadow: '0 8px 32px rgba(65,105,225,0.25)',
@@ -159,7 +159,7 @@ export default function MissionVision() {
               fontSize: '0.97rem', lineHeight: 1.85,
               margin: '0 0 24px', fontWeight: 500,
             }}>
-              To redefine clinical documentation — so every doctor can walk into a
+              To redefine clinical documentation so every doctor can walk into a
               consultation room and give their patient one hundred percent of their
               attention, knowing the documentation is already taken care of.
             </p>

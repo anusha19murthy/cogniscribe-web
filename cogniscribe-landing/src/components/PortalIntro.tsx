@@ -261,7 +261,7 @@ export default function PortalIntro({ onComplete }: Props) {
           {/* Top brand strip */}
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0,
-            height: 10, background: '#4169E1',
+            height: 10, background: '#2563EB',
             zIndex: 4,
           }} />
 
@@ -282,12 +282,12 @@ export default function PortalIntro({ onComplete }: Props) {
               <div style={{
                 position: 'absolute', left: '50%', top: 0,
                 transform: 'translateX(-50%)',
-                width: 8, height: 28, background: '#4169E1', borderRadius: 1,
+                width: 8, height: 28, background: '#2563EB', borderRadius: 1,
               }} />
               <div style={{
                 position: 'absolute', top: '50%', left: 0,
                 transform: 'translateY(-50%)',
-                width: 28, height: 8, background: '#4169E1', borderRadius: 1,
+                width: 28, height: 8, background: '#2563EB', borderRadius: 1,
               }} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -305,7 +305,7 @@ export default function PortalIntro({ onComplete }: Props) {
                 fontFamily: "'Montserrat', sans-serif",
                 fontWeight: 700,
                 fontSize: '0.65rem',
-                color: '#4169E1',
+                color: '#2563EB',
                 letterSpacing: '0.25em',
                 marginTop: 5,
                 textTransform: 'uppercase',
@@ -373,7 +373,7 @@ export default function PortalIntro({ onComplete }: Props) {
             <div style={{
               position: 'absolute', top: 12, left: 0, right: 0,
               height: 2,
-              background: 'linear-gradient(90deg, transparent, #4169E1, transparent)',
+              background: 'linear-gradient(90deg, transparent, #2563EB, transparent)',
               opacity: 0.6,
             }} />
 
@@ -581,7 +581,7 @@ export default function PortalIntro({ onComplete }: Props) {
         fontSize: '0.8rem',
         fontWeight: 600,
         fontFamily: "'Montserrat', sans-serif",
-        color: '#4169E1',
+        color: '#2563EB',
         letterSpacing: '0.04em',
         boxShadow: '0 2px 8px rgba(65, 105, 225,0.1)',
       }}>
@@ -650,7 +650,7 @@ export default function PortalIntro({ onComplete }: Props) {
           onMouseEnter={() => {
             setBtnHover(true);
             if (ringRef.current) ringRef.current.style.width = ringRef.current.style.height = '44px';
-            if (dotRef.current) dotRef.current.style.background = '#4169E1';
+            if (dotRef.current) dotRef.current.style.background = '#2563EB';
           }}
           onMouseLeave={() => {
             setBtnHover(false);
@@ -660,7 +660,7 @@ export default function PortalIntro({ onComplete }: Props) {
           style={{
             marginTop: 10,
             padding: '14px 44px',
-            background: btnHover ? '#1d4ed8' : '#4169E1',
+            background: btnHover ? '#1d4ed8' : '#2563EB',
             border: 'none', borderRadius: 50,
             fontSize: 15, fontWeight: 700,
             fontFamily: "'Montserrat', sans-serif",
@@ -694,7 +694,7 @@ export default function PortalIntro({ onComplete }: Props) {
         style={{
           position: 'fixed', top: 0, left: 0,
           width: 28, height: 28, borderRadius: '50%',
-          border: '2px solid #4169E1', pointerEvents: 'none',
+          border: '2px solid #2563EB', pointerEvents: 'none',
           zIndex: 100000,
           transition: 'width 0.2s ease, height 0.2s ease',
         }}

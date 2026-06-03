@@ -84,12 +84,20 @@ function Dictation({ doctor, onLogout }) {
       let text = '';
       try {
         const transcribeRes = await axios.post(`${BACKEND}/transcribe`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 60000,
         });
         text = transcribeRes.data.transcript;
         setTranscript(text);
       } catch (transcribeErr) {
-        const errMsg = transcribeErr.response?.data?.detail || transcribeErr.message || 'Transcription error';
+        let errMsg;
+        if (transcribeErr.code === 'ERR_NETWORK' || transcribeErr.message === 'Network Error') {
+          errMsg = 'Cannot reach the server. The server may be sleeping (Railway free tier) or CORS is not configured. Please try again in a moment.';
+        } else if (transcribeErr.code === 'ECONNABORTED') {
+          errMsg = 'Request timed out. The server took too long to respond.';
+        } else {
+          errMsg = transcribeErr.response?.data?.detail || transcribeErr.message || 'Transcription error';
+        }
         setError(`Transcription failed: ${typeof errMsg === 'object' ? JSON.stringify(errMsg) : errMsg}`);
         setProcessing(false);
         return;
@@ -100,7 +108,8 @@ function Dictation({ doctor, onLogout }) {
           transcript: String(text),
           patient_id: patient?.id || null
         }, {
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 60000,
         });
         navigate('/note', { state: { note: extractRes.data, noteType, patient, dateKey, audioBlob: audioBlob.current } });
       } catch (extractErr) {

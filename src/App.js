@@ -1,51 +1,49 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LandingApp from './landing/App';
+import SampleViewer from './landing/pages/SampleViewer';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Dictation from './components/Dictation';
 import NoteDisplay from './components/NoteDisplay';
 import PatientHistory from './components/PatientHistory';
 
-function App() {
-  const [doctor, setDoctor] = useState(() => {
-    const saved = localStorage.getItem('cogniscribe_doctor');
-    return saved ? JSON.parse(saved) : null;
-  });
+function getStoredDoctor() {
+  try {
+    const raw = localStorage.getItem('cogniscribe_auth');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
 
-  const handleLogin = (doctorData) => {
-    localStorage.setItem('cogniscribe_doctor', JSON.stringify(doctorData));
-    setDoctor(doctorData);
-  };
+export default function App() {
+  const [doctor, setDoctor] = useState(getStoredDoctor);
 
-const handleLogout = (switchAccount = false) => {
-    localStorage.removeItem('cogniscribe_doctor');
-    if (switchAccount) {
-      localStorage.removeItem('cogniscribe_auth');
-    }
+  const handleLogout = (switchAccount = false) => {
+    if (switchAccount) localStorage.removeItem('cogniscribe_auth');
     setDoctor(null);
   };
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={
-          doctor ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />
-        } />
-        <Route path="/dashboard" element={
-          doctor ? <Dashboard doctor={doctor} onLogout={handleLogout} /> : <Navigate to="/" />
-        } />
-        <Route path="/dictation/:patientId" element={
-          doctor ? <Dictation doctor={doctor} onLogout={handleLogout} /> : <Navigate to="/" />
-        } />
-        <Route path="/note" element={
-          doctor ? <NoteDisplay doctor={doctor} onLogout={handleLogout} /> : <Navigate to="/" />
-        } />
-        <Route path="/history/:patientId" element={
-          <PatientHistory doctor={doctor} onLogout={handleLogout} />
-        } />
+
+        {/* Landing page */}
+        <Route path="/" element={<LandingApp />} />
+        <Route path="/sample/:type" element={<SampleViewer />} />
+
+        {/* Auth */}
+        <Route path="/login" element={<Login onLogin={setDoctor} />} />
+
+        {/* App */}
+        <Route path="/dashboard" element={<Dashboard doctor={doctor} onLogout={handleLogout} />} />
+        <Route path="/dictation" element={<Dictation  doctor={doctor} onLogout={handleLogout} />} />
+        <Route path="/dictation/:id" element={<Dictation doctor={doctor} onLogout={handleLogout} />} />
+        <Route path="/note"      element={<NoteDisplay doctor={doctor} onLogout={handleLogout} />} />
+        <Route path="/history"   element={<PatientHistory doctor={doctor} onLogout={handleLogout} />} />
+
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
-
-export default App;

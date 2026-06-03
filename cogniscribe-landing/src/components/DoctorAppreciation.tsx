@@ -11,7 +11,7 @@ const PARAGRAPHS = [
     highlights: [],
   },
   {
-    text: `CogniScribe exists for you and for one reason — to give that time back to you.`,
+    text: `CogniScribe exists for you and for one reason to give that time back to you.`,
     highlights: ['CogniScribe exists for you', 'to give that time back to you'],
   },
   {
@@ -42,7 +42,7 @@ function highlight(text: string, phrases: string[]) {
   }
   return parts.map((p, i) =>
     p.hi
-      ? <span key={i} style={{ color: '#4169E1', fontWeight: 700 }}>{p.text}</span>
+      ? <span key={i} style={{ color: '#2563EB', fontWeight: 700 }}>{p.text}</span>
       : <span key={i}>{p.text}</span>
   );
 }
@@ -60,7 +60,7 @@ function ECG() {
     <div ref={ref} style={{ maxWidth: 900, margin: '0 auto 48px', padding: '0 5%' }}>
       <svg width="100%" height="60" viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet">
         <path d={path} fill="none" stroke="rgba(65,105,225,0.08)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d={path} fill="none" stroke="#4169E1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        <path d={path} fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           style={{
             strokeDasharray: 2400,
             strokeDashoffset: inView ? 0 : 2400,
@@ -89,7 +89,7 @@ export default function DoctorAppreciation() {
           style={{ textAlign: 'center', marginBottom: 48 }}
         >
           <div style={{
-            color: '#4169E1',
+            color: '#2563EB',
             fontSize: '0.75rem', fontWeight: 700,
             letterSpacing: '0.15em', textTransform: 'uppercase',
             marginBottom: 12,
@@ -131,10 +131,10 @@ export default function DoctorAppreciation() {
                 borderRadius: 16,
                 padding: '32px 40px',
                 boxShadow: '0 4px 24px rgba(65,105,225,0.08)',
-                borderLeft: '3px solid #4169E1',
+                borderLeft: '3px solid #2563EB',
                 border: '1px solid rgba(65,105,225,0.12)',
                 borderLeftWidth: 3,
-                borderLeftColor: '#4169E1',
+                borderLeftColor: '#2563EB',
               }}
             >
               <p style={{
@@ -170,10 +170,10 @@ export default function DoctorAppreciation() {
             so your patients always have your full attention."
           </p>
           <p style={{
-            color: '#4169E1', fontWeight: 700,
+            color: '#2563EB', fontWeight: 700,
             fontSize: '0.9rem', margin: 0,
           }}>
-            — The CogniScribe Team
+            - The CogniScribe Team
           </p>
         </motion.div>
       </div>

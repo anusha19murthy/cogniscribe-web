@@ -75,7 +75,7 @@ function TiltCard({ s, i }: { s: typeof SPECIALTIES[0]; i: number }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           marginBottom: 18,
         }}>
-          <s.Icon size={24} color="#4169E1" />
+          <s.Icon size={24} color="#2563EB" />
         </div>
         <h3 style={{
           fontWeight: 700, fontSize: '1.1rem',
@@ -94,7 +94,7 @@ function TiltCard({ s, i }: { s: typeof SPECIALTIES[0]; i: number }) {
           {s.tags.map(t => (
             <span key={t} style={{
               fontSize: '0.72rem', fontWeight: 600,
-              background: 'rgba(65,105,225,0.06)', color: '#4169E1',
+              background: 'rgba(65,105,225,0.06)', color: '#2563EB',
               borderRadius: 50, padding: '4px 12px',
               border: '1px solid rgba(65,105,225,0.15)',
             }}>
@@ -109,7 +109,10 @@ function TiltCard({ s, i }: { s: typeof SPECIALTIES[0]; i: number }) {
 
 export default function DictationTypes() {
   return (
-    <section style={{
+    <section 
+    id = 'features'
+    style={{
+      scrollMarginTop: '90px',
       padding: '100px 0',
       background: '#ffffff',
       fontFamily: "'Montserrat', sans-serif",
@@ -123,7 +126,7 @@ export default function DictationTypes() {
           style={{ textAlign: 'center', marginBottom: 56 }}
         >
           <div style={{
-            color: '#4169E1',
+            color: '#2563EB',
             fontSize: '0.75rem', fontWeight: 700,
             letterSpacing: '0.15em', textTransform: 'uppercase',
             marginBottom: 12,
@@ -183,7 +186,7 @@ export default function DictationTypes() {
                     background: 'rgba(65,105,225,0.08)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <f.Icon size={28} color="#4169E1" />
+                    <f.Icon size={28} color="#2563EB" />
                   </div>
                   <div>
                     <h3 style={{
@@ -222,7 +225,7 @@ export default function DictationTypes() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     justifySelf: 'end',
                   }}>
-                    <f.Icon size={28} color="#4169E1" />
+                    <f.Icon size={28} color="#2563EB" />
                   </div>
                 </>
               )}

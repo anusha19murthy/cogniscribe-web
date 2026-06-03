@@ -26,7 +26,7 @@ export default function ClaimTime() {
           style={{ textAlign: 'center', marginBottom: 48 }}
         >
           <div style={{
-            color: '#4169E1',
+            color: '#2563EB',
             fontSize: '0.75rem', fontWeight: 700,
             letterSpacing: '0.15em', textTransform: 'uppercase',
             marginBottom: 12,

@@ -28,7 +28,7 @@ export default function Stethoscope() {
   );
 
   const material = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#4169E1',
+    color: '#2563EB',
     metalness: 0.6,
     roughness: 0.2,
   }), []);

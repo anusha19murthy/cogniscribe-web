@@ -36,7 +36,7 @@ export function LaptopModel() {
     ctx.fillRect(0, 0, 512, 36);
 
     // Nav logo area
-    ctx.fillStyle = '#4169E1';
+    ctx.fillStyle = '#2563EB';
     ctx.beginPath();
     ctx.roundRect(14, 8, 20, 20, 4);
     ctx.fill();
@@ -57,7 +57,7 @@ export function LaptopModel() {
     // Sidebar icons
     const sideIcons = [48, 88, 128, 168, 208];
     sideIcons.forEach((y, i) => {
-      ctx.fillStyle = i === 0 ? '#4169E1' : 'rgba(255,255,255,0.15)';
+      ctx.fillStyle = i === 0 ? '#2563EB' : 'rgba(255,255,255,0.15)';
       ctx.beginPath();
       ctx.roundRect(16, y, 44, 28, 6);
       ctx.fill();
@@ -71,7 +71,7 @@ export function LaptopModel() {
 
     // Stat cards row
     const stats = [
-      { x: 92, color: '#4169E1', label: 'Notes', val: '24' },
+      { x: 92, color: '#2563EB', label: 'Notes', val: '24' },
       { x: 205, color: '#10B981', label: 'Saved', val: '2h' },
       { x: 318, color: '#F97316', label: 'Patients', val: '8' },
     ];
@@ -104,7 +104,7 @@ export function LaptopModel() {
       ctx.roundRect(92, 156 + i * 36, 328, 28, 6);
       ctx.fill();
 
-      ctx.fillStyle = '#4169E1';
+      ctx.fillStyle = '#2563EB';
       ctx.beginPath();
       ctx.arc(106, 170 + i * 36, 5, 0, Math.PI * 2);
       ctx.fill();
@@ -119,7 +119,7 @@ export function LaptopModel() {
     });
 
     // Waveform at bottom
-    ctx.strokeStyle = '#4169E1';
+    ctx.strokeStyle = '#2563EB';
     ctx.lineWidth = 1.5;
     ctx.globalAlpha = 0.4;
     ctx.beginPath();
@@ -238,7 +238,7 @@ export function PhoneModel() {
     ctx.fillRect(0, 28, 256, 52);
 
     // Logo in header
-    ctx.fillStyle = '#4169E1';
+    ctx.fillStyle = '#2563EB';
     ctx.beginPath();
     ctx.roundRect(16, 38, 22, 22, 4);
     ctx.fill();
@@ -251,7 +251,7 @@ export function PhoneModel() {
     ctx.fillText('CogniScribe', 46, 52);
 
     // Mic button — large centered circle
-    ctx.fillStyle = '#4169E1';
+    ctx.fillStyle = '#2563EB';
     ctx.beginPath();
     ctx.arc(128, 155, 42, 0, Math.PI * 2);
     ctx.fill();
@@ -291,7 +291,7 @@ export function PhoneModel() {
     ctx.fillText('Recent', 18, 258);
 
     const notes = ['SOAP Note', 'Progress', 'Discharge'];
-    const noteColors = ['#4169E1', '#10B981', '#F97316'];
+    const noteColors = ['#2563EB', '#10B981', '#F97316'];
     notes.forEach((n, i) => {
       ctx.fillStyle = 'rgba(255,255,255,0.06)';
       ctx.beginPath();
@@ -382,7 +382,7 @@ export function MedicalCapsule({
       <mesh>
         <sphereGeometry args={[0.5, 24, 24, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial
-          color="#4169E1" metalness={0.3} roughness={0.4}
+          color="#2563EB" metalness={0.3} roughness={0.4}
           transparent opacity={opacity}
           side={THREE.DoubleSide}
         />
@@ -402,7 +402,7 @@ export function MedicalCapsule({
       <mesh>
         <cylinderGeometry args={[0.5, 0.5, 0.8, 24]} />
         <meshStandardMaterial
-          color="#4169E1" metalness={0.3} roughness={0.4}
+          color="#2563EB" metalness={0.3} roughness={0.4}
           transparent opacity={opacity * 0.8}
           side={THREE.DoubleSide}
         />
@@ -420,7 +420,7 @@ export function MedicalCapsule({
       {/* Seam ring */}
       <mesh>
         <torusGeometry args={[0.5, 0.018, 8, 36]} />
-        <meshStandardMaterial color="#4169E1" transparent opacity={opacity + 0.1} metalness={0.5} />
+        <meshStandardMaterial color="#2563EB" transparent opacity={opacity + 0.1} metalness={0.5} />
       </mesh>
     </group>
   );

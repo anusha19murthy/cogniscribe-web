@@ -42,7 +42,7 @@ export default function CustomCursor() {
       <motion.div className="cursor" style={{ left: sx, top: sy }}>
         <div
           className="cursor-dot"
-          style={{ background: hovering ? '#F97316' : '#4169E1', transition: 'background 0.2s' }}
+          style={{ background: hovering ? '#F97316' : '#2563EB', transition: 'background 0.2s' }}
         />
       </motion.div>
 
@@ -51,7 +51,7 @@ export default function CustomCursor() {
         <div
           className={`cursor-ring${hovering ? ' hover' : ''}`}
           style={{
-            borderColor: hovering ? '#F97316' : '#4169E1',
+            borderColor: hovering ? '#F97316' : '#2563EB',
             transition: 'border-color 0.2s, width 0.2s, height 0.2s',
           }}
         />

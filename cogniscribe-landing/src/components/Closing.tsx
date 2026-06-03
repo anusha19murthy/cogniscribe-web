@@ -68,7 +68,7 @@ export default function Closing() {
               <button
                 className="btn-capsule"
                 style={{
-                  background: '#4169E1',
+                  background: '#2563EB',
                   color: 'white',
                   boxShadow: '0 8px 32px rgba(65,105,225,0.5)',
                   display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -154,7 +154,7 @@ export default function Closing() {
             fontSize: '0.8rem',
             color: 'rgba(255,255,255,0.5)', fontWeight: 500,
           }}>
-            © 2025 CogniScribe. All rights reserved.
+            © 2026 CogniScribe. All rights reserved.
           </div>
         </div>
       </footer>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const WARDS = [
   'General OPD','General Ward','ICU','Emergency','Paediatrics',
@@ -9,6 +10,7 @@ const WARDS = [
 ];
 
 function Login({ onLogin }) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', clinic: '', ward: '', password: '' });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -45,7 +47,8 @@ function Login({ onLogin }) {
         setError('Incorrect password');
         return;
       }
-      onLogin({ name: auth.name, clinic: auth.clinic, ward: auth.ward });
+      if (onLogin) onLogin({ name: auth.name, clinic: auth.clinic, ward: auth.ward });
+      navigate('/dashboard');
       return;
     }
 
@@ -63,7 +66,8 @@ function Login({ onLogin }) {
       ward: finalWard,
       password: form.password
     }));
-    onLogin({ name: form.name, clinic: form.clinic, ward: finalWard });
+    if (onLogin) onLogin({ name: form.name, clinic: form.clinic, ward: finalWard });
+    navigate('/dashboard');
   };
 
   // Returning user — only password needed

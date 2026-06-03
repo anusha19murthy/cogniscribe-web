@@ -11,7 +11,7 @@ function makeSignTexture() {
   ctx.fillStyle = '#0f1629';
   ctx.fillRect(0, 0, 512, 128);
   ctx.font = 'bold 52px Montserrat, sans-serif';
-  ctx.fillStyle = '#4169E1';
+  ctx.fillStyle = '#2563EB';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('CogniScribe', 256, 64);
@@ -84,7 +84,7 @@ function LampPost({ x }: { x: number }) {
       {/* Halo disc on ground */}
       <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[2.5, 32]} />
-        <meshStandardMaterial color="#4169E1" transparent opacity={0.08} />
+        <meshStandardMaterial color="#2563EB" transparent opacity={0.08} />
       </mesh>
     </group>
   );
@@ -186,18 +186,18 @@ export default function HospitalScene({ sceneRef, cameraRef }: Props) {
       {/* Blue accent strip along bottom edge */}
       <mesh position={[0, 0.12, 0.35]}>
         <boxGeometry args={[40, 0.18, 0.12]} />
-        <meshStandardMaterial color="#4169E1" emissive="#4169E1" emissiveIntensity={1.8} />
+        <meshStandardMaterial color="#2563EB" emissive="#2563EB" emissiveIntensity={1.8} />
       </mesh>
 
       {/* Medical cross — vertical bar */}
       <mesh position={[0, 14, 0.4]}>
         <boxGeometry args={[0.5, 2.2, 0.15]} />
-        <meshStandardMaterial color="#4169E1" emissive="#4169E1" emissiveIntensity={2.2} />
+        <meshStandardMaterial color="#2563EB" emissive="#2563EB" emissiveIntensity={2.2} />
       </mesh>
       {/* Medical cross — horizontal bar */}
       <mesh position={[0, 14, 0.4]}>
         <boxGeometry args={[2.2, 0.5, 0.15]} />
-        <meshStandardMaterial color="#4169E1" emissive="#4169E1" emissiveIntensity={2.2} />
+        <meshStandardMaterial color="#2563EB" emissive="#2563EB" emissiveIntensity={2.2} />
       </mesh>
 
       {/* CogniScribe sign */}

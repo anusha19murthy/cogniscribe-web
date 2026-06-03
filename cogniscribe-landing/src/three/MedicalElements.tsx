@@ -38,7 +38,7 @@ export function MedicalParticles() {
 
   return (
     <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial color="#4169E1" size={0.06} transparent opacity={0.5} sizeAttenuation />
+      <pointsMaterial color="#2563EB" size={0.06} transparent opacity={0.5} sizeAttenuation />
     </points>
   );
 }
@@ -84,7 +84,7 @@ export function DNAHelix() {
             new THREE.Vector3(0, 1, 0), dir.clone().normalize()
           )}>
             <cylinderGeometry args={[0.02, 0.02, len, 6]} />
-            <meshStandardMaterial color="#4169E1" metalness={0.5} roughness={0.3} />
+            <meshStandardMaterial color="#2563EB" metalness={0.5} roughness={0.3} />
           </mesh>
         );
       })}
