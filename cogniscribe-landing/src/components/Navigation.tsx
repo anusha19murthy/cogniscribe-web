@@ -53,17 +53,14 @@ export default function Navigation() {
   key={link.id}
   href="#"
   onClick={(e) => {
-    e.preventDefault();
-
-    const section = document.getElementById(link.id);
-
-    if (section) {
-      section.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  }}
+  e.preventDefault();
+  const section = document.getElementById(link.id);
+  if (section) {
+    window.dispatchEvent(
+      new CustomEvent('lenis-scroll-to', { detail: { target: section } })
+    );
+  }
+}}
     style={{
       fontSize: '0.9rem',
       fontWeight: 500,

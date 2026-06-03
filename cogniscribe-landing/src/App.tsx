@@ -58,26 +58,29 @@ export default function App() {
 
   // Smooth scroll setup
   useEffect(() => {
-    if (!loaded) return;
+  if (!loaded) return;
 
-    const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
-    lenisRef.current = lenis;
+  const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+  lenisRef.current = lenis;
 
-    lenis.on('scroll', ScrollTrigger.update);
+  lenis.on('scroll', ScrollTrigger.update);
 
-    const raf = (t) => {
-      lenis.raf(t);
-      requestAnimationFrame(raf);
-    };
+  const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
+  requestAnimationFrame(raf);
+  gsap.ticker.lagSmoothing(0);
 
-    requestAnimationFrame(raf);
-    gsap.ticker.lagSmoothing(0);
+  // ✅ ADD THIS — lets nav talk to lenis
+  const handleScrollTo = (e) => {
+    lenis.scrollTo(e.detail.target, { offset: -80, duration: 1.2 });
+  };
+  window.addEventListener('lenis-scroll-to', handleScrollTo);
 
-    return () => {
-      lenis.destroy();
-      lenisRef.current = null;
-    };
-  }, [loaded]);
+  return () => {
+    lenis.destroy();
+    lenisRef.current = null;
+    window.removeEventListener('lenis-scroll-to', handleScrollTo); // ✅ cleanup
+  };
+}, [loaded]);
 
   return (
     <>
