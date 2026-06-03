@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LandingApp from './landing/App';
-import SampleViewer from './landing/pages/SampleViewer';
+import Landing from './components/Landing';   // ADD this at top
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Dictation from './components/Dictation';
@@ -30,8 +29,7 @@ export default function App() {
       <Routes>
 
         {/* Landing page */}
-        <Route path="/" element={<LandingApp />} />
-        <Route path="/sample/:type" element={<SampleViewer />} />
+        <Route path="/" element={<Landing />} />
 
         {/* Auth */}
         <Route path="/login" element={<Login onLogin={setDoctor} />} />
