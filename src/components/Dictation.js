@@ -21,7 +21,7 @@ function Dictation({ doctor, onLogout }) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [extractedNote, setExtractedNote] = useState(null);
+  //const [extractedNote, setExtractedNote] = useState(null);
   const [hasRecorded, setHasRecorded] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showExport, setShowExport] = useState(false);
@@ -49,7 +49,6 @@ function Dictation({ doctor, onLogout }) {
   const startRecording = async () => {
     try {
       setError('');
-      setExtractedNote(null);
       setTranscript('');
       setHasRecorded(false);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -134,7 +133,6 @@ function Dictation({ doctor, onLogout }) {
     setHasRecorded(false);
     setError('');
     setSaved(false);
-    setExtractedNote(null);
   };
 
   // Fix 4 — proper audio export
