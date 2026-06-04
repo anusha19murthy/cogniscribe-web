@@ -1,4 +1,4 @@
-import { useRef, useState, Suspense } from 'react';
+import { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -8,19 +8,35 @@ import { capsuleBreakState } from '../three/capsuleBreakState';
 export default function MissionVision() {
   const sectionRef = useRef<HTMLElement>(null);
   const [broken, setBroken] = useState(false);
+  const [canvasReady, setCanvasReady] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  // Trigger break at 55% scroll through section
   useTransform(scrollYProgress, (v) => {
     if (v >= 0.55 && !capsuleBreakState.triggered) {
       capsuleBreakState.triggered = true;
       capsuleBreakState.onComplete = () => setBroken(true);
     }
   });
+
+  // Only mount Canvas when section is visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setCanvasReady(true);
+        } else {
+          setCanvasReady(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section
@@ -58,13 +74,13 @@ export default function MissionVision() {
           </h2>
         </motion.div>
 
-        {/* Capsule canvas */}
-        {!broken && (
+        {/* Canvas only mounts when visible and not broken */}
+        {!broken && canvasReady && (
           <div style={{ width: '100%', height: 320, marginBottom: 48 }}>
             <Canvas
               camera={{ position: [0, 0, 3], fov: 40 }}
               style={{ width: '100%', height: '100%', background: 'transparent' }}
-              gl={{ alpha: true, antialias: true }}
+              gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
             >
               <Suspense fallback={null}>
                 <ambientLight intensity={0.8} />

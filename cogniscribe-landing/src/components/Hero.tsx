@@ -1,4 +1,4 @@
-import { useEffect, useRef, Suspense } from 'react';
+import { useEffect, useRef, Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { motion } from 'framer-motion';
@@ -11,6 +11,8 @@ import { magneticEffect } from '../animations/hoverEffects';
 export default function Hero() {
   const btn1Ref = useRef<HTMLDivElement>(null);
   const btn2Ref = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [canvasReady, setCanvasReady] = useState(false);
 
   useEffect(() => {
     const cleanups: (() => void)[] = [];
@@ -25,21 +27,37 @@ export default function Hero() {
     window.addEventListener('scroll', onScroll, { passive: true });
     cleanups.push(() => window.removeEventListener('scroll', onScroll));
 
+    // Only mount Canvas when section is visible
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setCanvasReady(true);
+        } else {
+          setCanvasReady(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    cleanups.push(() => observer.disconnect());
+
     return () => cleanups.forEach(fn => fn());
   }, []);
 
   return (
-    <section style={{
-      minHeight: '100vh',
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      alignItems: 'center',
-      position: 'relative',
-      overflow: 'hidden',
-      paddingTop: 64,
-      background: 'var(--bg)',
-      fontFamily: "'Montserrat', sans-serif",
-    }}>
+    <section
+      ref={sectionRef}
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        alignItems: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        paddingTop: 64,
+        background: 'var(--bg)',
+        fontFamily: "'Montserrat', sans-serif",
+      }}>
       {/* Left — text */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -108,27 +126,29 @@ export default function Hero() {
         </p>
       </motion.div>
 
-      {/* Right — 3D Caduceus */}
+      {/* Right — 3D Canvas, only mounted when visible */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, delay: 0.3 }}
         style={{ width: '100%', height: '100vh', position: 'relative' }}
       >
-        <Canvas
-          camera={{ position: [0, 0, 4.5], fov: 42 }}
-          style={{ width: '100%', height: '100%', background: 'transparent' }}
-          gl={{ alpha: true, antialias: true }}
-        >
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[5, 8, 5]} intensity={1.2} />
-            <directionalLight position={[-4, -2, -4]} intensity={0.3} color="#6b8ef5" />
-            <MedicalParticles />
-            <Caduceus />
-            <Environment preset="city" />
-          </Suspense>
-        </Canvas>
+        {canvasReady && (
+          <Canvas
+            camera={{ position: [0, 0, 4.5], fov: 42 }}
+            style={{ width: '100%', height: '100%', background: 'transparent' }}
+            gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+          >
+            <Suspense fallback={null}>
+              <ambientLight intensity={0.6} />
+              <directionalLight position={[5, 8, 5]} intensity={1.2} />
+              <directionalLight position={[-4, -2, -4]} intensity={0.3} color="#6b8ef5" />
+              <MedicalParticles />
+              <Caduceus />
+              <Environment preset="city" />
+            </Suspense>
+          </Canvas>
+        )}
       </motion.div>
     </section>
   );
