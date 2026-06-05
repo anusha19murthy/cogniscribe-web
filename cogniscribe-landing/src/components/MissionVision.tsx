@@ -4,6 +4,7 @@ import { Environment } from '@react-three/drei';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import MissionCapsule from '../three/MissionCapsule';
 import { capsuleBreakState } from '../three/capsuleBreakState';
+import { webglManager } from '../three/webglManager';
 
 export default function MissionVision() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -23,20 +24,25 @@ export default function MissionVision() {
   });
 
   // Only mount Canvas when section is visible
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setCanvasReady(true);
-        } else {
-          setCanvasReady(false);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
+useEffect(() => {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        webglManager.request('mission');
+        setCanvasReady(true);
+      } else {
+        webglManager.release('mission');
+        setCanvasReady(false);
+      }
+    },
+    { threshold: 0.1 }
+  );
+  if (sectionRef.current) observer.observe(sectionRef.current);
+  return () => {
+    observer.disconnect();
+    webglManager.release('mission');
+  };
+}, []);
 
   return (
     <section

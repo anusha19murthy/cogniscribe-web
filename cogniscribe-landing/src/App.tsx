@@ -25,27 +25,22 @@ const Closing = lazy(() => import('./components/Closing.tsx'));
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Loading fallback
 function SectionFallback() {
   return (
-    <div
-      style={{
-        minHeight: '60vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        style={{
-          width: 40,
-          height: 40,
-          border: '3px solid rgba(65, 105, 225,0.15)',
-          borderTop: '3px solid #4169E1',
-          borderRadius: '50%',
-          animation: 'spin 0.8s linear infinite',
-        }}
-      />
+    <div style={{
+      minHeight: '60vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <div style={{
+        width: 40,
+        height: 40,
+        border: '3px solid rgba(65, 105, 225,0.15)',
+        borderTop: '3px solid #4169E1',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite',
+      }} />
       <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
     </div>
   );
@@ -56,31 +51,29 @@ export default function App() {
   const [portalDone, setPortalDone] = useState(false);
   const lenisRef = useRef(null);
 
-  // Smooth scroll setup
   useEffect(() => {
-  if (!loaded) return;
+    if (!loaded) return;
 
-  const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
-  lenisRef.current = lenis;
+    const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+    lenisRef.current = lenis;
 
-  lenis.on('scroll', ScrollTrigger.update);
+    lenis.on('scroll', ScrollTrigger.update);
 
-  const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
-  requestAnimationFrame(raf);
-  gsap.ticker.lagSmoothing(0);
+    const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+    gsap.ticker.lagSmoothing(0);
 
-  // ✅ ADD THIS — lets nav talk to lenis
-  const handleScrollTo = (e) => {
-    lenis.scrollTo(e.detail.target, { offset: -80, duration: 1.2 });
-  };
-  window.addEventListener('lenis-scroll-to', handleScrollTo);
+    const handleScrollTo = (e) => {
+      lenis.scrollTo(e.detail.target, { offset: -80, duration: 1.2 });
+    };
+    window.addEventListener('lenis-scroll-to', handleScrollTo);
 
-  return () => {
-    lenis.destroy();
-    lenisRef.current = null;
-    window.removeEventListener('lenis-scroll-to', handleScrollTo); // ✅ cleanup
-  };
-}, [loaded]);
+    return () => {
+      lenis.destroy();
+      lenisRef.current = null;
+      window.removeEventListener('lenis-scroll-to', handleScrollTo);
+    };
+  }, [loaded]);
 
   return (
     <>
@@ -101,8 +94,13 @@ export default function App() {
       <main>
         <Navigation />
 
+        {/* Hero loads first, alone — owns WebGL context on load */}
         <Suspense fallback={<SectionFallback />}>
           <Hero />
+        </Suspense>
+
+        {/* Rest of sections load after */}
+        <Suspense fallback={<SectionFallback />}>
           <DoctorAppreciation />
           <ClaimTime />
           <RecordSaveExport />

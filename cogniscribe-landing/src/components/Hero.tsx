@@ -7,6 +7,7 @@ import Caduceus from '../three/Caduceus';
 import { MedicalParticles } from '../three/MedicalElements';
 import { caduceusProgress } from '../three/caduceusProgress';
 import { magneticEffect } from '../animations/hoverEffects';
+import { webglManager } from '../three/webglManager';
 
 export default function Hero() {
   const btn1Ref = useRef<HTMLDivElement>(null);
@@ -16,6 +17,7 @@ export default function Hero() {
 
   useEffect(() => {
     const cleanups: (() => void)[] = [];
+
     if (btn1Ref.current) cleanups.push(magneticEffect(btn1Ref.current));
     if (btn2Ref.current) cleanups.push(magneticEffect(btn2Ref.current));
 
@@ -27,19 +29,27 @@ export default function Hero() {
     window.addEventListener('scroll', onScroll, { passive: true });
     cleanups.push(() => window.removeEventListener('scroll', onScroll));
 
-    // Only mount Canvas when section is visible
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          webglManager.request('hero');
           setCanvasReady(true);
         } else {
+          webglManager.release('hero');
           setCanvasReady(false);
         }
       },
       { threshold: 0.1 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    cleanups.push(() => observer.disconnect());
+    cleanups.push(() => {
+      observer.disconnect();
+      webglManager.release('hero');
+    });
+
+    // Hero is visible on load so request immediately
+    webglManager.request('hero');
+    setCanvasReady(true);
 
     return () => cleanups.forEach(fn => fn());
   }, []);
@@ -57,7 +67,8 @@ export default function Hero() {
         paddingTop: 64,
         background: 'var(--bg)',
         fontFamily: "'Montserrat', sans-serif",
-      }}>
+      }}
+    >
       {/* Left — text */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -126,7 +137,7 @@ export default function Hero() {
         </p>
       </motion.div>
 
-      {/* Right — 3D Canvas, only mounted when visible */}
+      {/* Right — 3D Canvas */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
