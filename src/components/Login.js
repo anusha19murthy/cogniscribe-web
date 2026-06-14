@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import React, { useState, useEffect } from 'react';
 const BACKEND = 'https://aims-q0uy.onrender.com';
 
 const WARDS = [
@@ -22,6 +22,11 @@ function Login({ onLogin }) {
   const [showWardDropdown, setShowWardDropdown] = useState(false);
   const [customWard, setCustomWard] = useState('');
   const [isOther, setIsOther] = useState(false);
+
+  // Wake up Render backend on page load
+useEffect(() => {
+  fetch(`${BACKEND}/health`).catch(() => {});
+}, []);
 
   const storedAuth = localStorage.getItem('cogniscribe_auth');
   const isReturning = !!storedAuth;
