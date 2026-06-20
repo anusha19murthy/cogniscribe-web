@@ -30,17 +30,27 @@ function NoteDisplay({ doctor, onLogout }) {
     setEditedNote({ ...editedNote, [field]: value });
   };
 
-  const saveNote = () => {
-    const allNotes = JSON.parse(localStorage.getItem('cogniscribe_notes') || '{}');
-    if (!allNotes[patient.id]) allNotes[patient.id] = [];
-    allNotes[patient.id].push({
-      ...editedNote,
-      noteType,
-      savedAt: new Date().toISOString(),
-      dateKey
-    });
-    localStorage.setItem('cogniscribe_notes', JSON.stringify(allNotes));
-    setSaved(true);
+  const BACKEND = 'https://aims-production-3ac3.up.railway.app';
+
+  const saveNote = async () => {
+    const token = localStorage.getItem('cogniscribe_token');
+    try {
+      const res = await fetch(`${BACKEND}/patients/${patient.id}/notes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          note_type: noteType,
+          content: JSON.stringify(editedNote)
+        })
+      });
+      if (!res.ok) throw new Error('Failed to save note');
+      setSaved(true);
+    } catch (err) {
+      alert('Could not save note. Please check your connection and try again.');
+    }
   };
 
   // Fix 3 — proper audio export
