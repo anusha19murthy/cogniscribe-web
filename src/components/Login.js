@@ -1,7 +1,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-const BACKEND = 'https://aims-q0uy.onrender.com';
+const BACKEND = 'https://aims-production-3ac3.up.railway.app';
 
 const WARDS = [
   'General OPD','General Ward','ICU','Emergency','Paediatrics',
