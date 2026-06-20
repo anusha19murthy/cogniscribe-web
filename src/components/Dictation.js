@@ -103,9 +103,8 @@ function Dictation({ doctor, onLogout }) {
       }
 
       try {
-        const extractRes = await axios.post(`${BACKEND}/extract/${noteType}`, {
-          transcript: String(text),
-          patient_id: patient?.id || null
+        const extractRes = await axios.post(`${BACKEND}/${noteType}`, {
+          text: String(text)
         }, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 60000,
