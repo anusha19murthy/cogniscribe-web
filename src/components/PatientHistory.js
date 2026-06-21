@@ -1,17 +1,83 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Navbar from './Navbar';
+
+const BACKEND = 'https://aims-production-3ac3.up.railway.app';
 
 function PatientHistory({ doctor, onLogout }) {
   const { state } = useLocation();
+  const { id: routeId } = useParams();
   const navigate = useNavigate();
-  const { patient, dateKey } = state || {};
+  const token = localStorage.getItem('cogniscribe_token');
+
+  const [patient, setPatient] = useState(state?.patient || null);
+  const [patientNotes, setPatientNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [expandedNote, setExpandedNote] = useState(null);
 
-  const allNotes = JSON.parse(localStorage.getItem('cogniscribe_notes') || '{}');
-  const patientNotes = (allNotes[patient?.id] || []).sort((a, b) =>
-    new Date(b.savedAt) - new Date(a.savedAt)
-  );
+  const dateKey = state?.dateKey;
+  const patientId = routeId || patient?.id;
+
+  useEffect(() => {
+    if (!patientId) {
+      setLoading(false);
+      return;
+    }
+    loadPatientAndNotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId]);
+
+  const loadPatientAndNotes = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      // If we don't already have patient details (e.g. direct page load/refresh),
+      // fetch the full patient list and find this one by id.
+      if (!patient) {
+        const pRes = await fetch(`${BACKEND}/patients`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!pRes.ok) throw new Error('Failed to load patient');
+        const allPatients = await pRes.json();
+        const found = allPatients.find(p => p.id === patientId);
+        if (!found) {
+          setError('Patient not found.');
+          setLoading(false);
+          return;
+        }
+        setPatient(found);
+      }
+
+      const nRes = await fetch(`${BACKEND}/patients/${patientId}/notes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!nRes.ok) throw new Error('Failed to load notes');
+      const rawNotes = await nRes.json();
+
+      // Parse each note's JSON `content` string back into actual fields,
+      // and normalize field names to what the UI below expects.
+      const parsed = rawNotes.map(n => {
+        let fields = {};
+        try {
+          fields = JSON.parse(n.content);
+        } catch {
+          fields = {};
+        }
+        return {
+          ...fields,
+          noteType: n.note_type,
+          savedAt: n.created_at
+        };
+      });
+
+      setPatientNotes(parsed);
+    } catch (err) {
+      setError('Could not load patient history. Please refresh.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatDate = (isoString) => {
     const d = new Date(isoString);
@@ -104,7 +170,28 @@ function PatientHistory({ doctor, onLogout }) {
     return fields;
   };
 
-  if (!patient) return <div>No patient selected</div>;
+  if (loading) {
+    return (
+      <div>
+        <Navbar doctor={doctor} onLogout={onLogout} />
+        <div className="main-content"><p style={{padding: '24px'}}>Loading...</p></div>
+      </div>
+    );
+  }
+
+  if (error || !patient) {
+    return (
+      <div>
+        <Navbar doctor={doctor} onLogout={onLogout} />
+        <div className="main-content">
+          <p style={{padding: '24px', color: '#dc2626'}}>{error || 'No patient selected'}</p>
+          <button onClick={() => navigate('/dashboard')} style={{margin: '0 24px'}}>← Back to Dashboard</button>
+        </div>
+      </div>
+    );
+  }
+
+  const sortedNotes = [...patientNotes].sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
 
   return (
     <div>
@@ -113,7 +200,6 @@ function PatientHistory({ doctor, onLogout }) {
       <div className="main-content">
         <div className="note-container">
 
-          {/* Patient Header */}
           <div style={{
             background: 'white', borderRadius: '12px',
             padding: '24px', marginBottom: '24px',
@@ -133,10 +219,10 @@ function PatientHistory({ doctor, onLogout }) {
                 {patient.name}
               </h2>
               <p style={{margin: '4px 0 0', color: '#888', fontSize: '14px'}}>
-                {patient.age} years old  •  {patient.gender}  •  {patient.reason}
+                {patient.age} years old  •  {patient.gender}  •  {patient.contact}
               </p>
               <p style={{margin: '4px 0 0', color: '#2563eb', fontSize: '13px', fontWeight: '500'}}>
-                {patientNotes.length} saved note{patientNotes.length !== 1 ? 's' : ''}
+                {sortedNotes.length} saved note{sortedNotes.length !== 1 ? 's' : ''}
               </p>
             </div>
             <button
@@ -151,31 +237,23 @@ function PatientHistory({ doctor, onLogout }) {
             </button>
           </div>
 
-          {/* Notes Timeline */}
-          {patientNotes.length === 0 ? (
+          {sortedNotes.length === 0 ? (
             <div style={{
               textAlign: 'center', padding: '60px 20px',
               background: 'white', borderRadius: '12px',
               border: '1px solid #e0e0e0'
             }}>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" style={{marginBottom: '16px'}}>
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-              </svg>
               <p style={{color: '#aaa', fontSize: '15px', margin: 0}}>No saved notes for this patient yet.</p>
               <p style={{color: '#ccc', fontSize: '13px', margin: '8px 0 0'}}>Notes will appear here after you save them from the dictation page.</p>
             </div>
           ) : (
             <div style={{position: 'relative'}}>
-              {/* Timeline line */}
               <div style={{
                 position: 'absolute', left: '27px', top: '0', bottom: '0',
                 width: '2px', background: '#e0e0e0', zIndex: 0
               }}/>
 
-              {patientNotes.map((note, index) => {
+              {sortedNotes.map((note, index) => {
                 const colors = getNoteTypeColor(note.noteType);
                 const isExpanded = expandedNote === index;
                 const fields = renderNoteFields(note);
@@ -185,7 +263,6 @@ function PatientHistory({ doctor, onLogout }) {
                     position: 'relative', paddingLeft: '64px',
                     marginBottom: '16px', zIndex: 1
                   }}>
-                    {/* Timeline dot */}
                     <div style={{
                       position: 'absolute', left: '18px', top: '20px',
                       width: '20px', height: '20px', borderRadius: '50%',
@@ -194,7 +271,6 @@ function PatientHistory({ doctor, onLogout }) {
                       zIndex: 2
                     }}/>
 
-                    {/* Note card */}
                     <div style={{
                       background: 'white', borderRadius: '12px',
                       border: '1px solid #e0e0e0',
@@ -202,7 +278,6 @@ function PatientHistory({ doctor, onLogout }) {
                       boxShadow: isExpanded ? '0 4px 20px rgba(0,0,0,0.08)' : 'none',
                       transition: 'box-shadow 0.2s'
                     }}>
-                      {/* Card header */}
                       <div
                         onClick={() => setExpandedNote(isExpanded ? null : index)}
                         style={{
@@ -252,7 +327,6 @@ function PatientHistory({ doctor, onLogout }) {
                         </svg>
                       </div>
 
-                      {/* Expanded content */}
                       {isExpanded && (
                         <div style={{
                           padding: '0 20px 20px',
@@ -285,7 +359,6 @@ function PatientHistory({ doctor, onLogout }) {
                             ))}
                           </div>
 
-                          {/* Medications table if OPD */}
                           {note.noteType === 'opd' && note.medications?.length > 0 && (
                             <div style={{marginTop: '12px'}}>
                               <div style={{
