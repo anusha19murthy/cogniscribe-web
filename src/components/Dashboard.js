@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 
 const BACKEND = 'https://aims-production-3ac3.up.railway.app';
 
 function Dashboard({ doctor, onLogout }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const token = localStorage.getItem('cogniscribe_token');
 
   const [allPatients, setAllPatients] = useState([]);
@@ -23,6 +22,7 @@ function Dashboard({ doctor, onLogout }) {
   const [searchAge, setSearchAge] = useState('');
   const [searchGender, setSearchGender] = useState('');
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchPatients(); }, []);
 
   const fetchPatients = async () => {
