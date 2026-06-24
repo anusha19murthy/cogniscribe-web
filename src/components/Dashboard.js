@@ -246,7 +246,26 @@ function Dashboard({ doctor, onLogout }) {
             </div>
             <div className="modal-actions">
               <button className="modal-cancel" onClick={() => setEditingPatient(null)}>Cancel</button>
-              <button className="modal-submit" onClick={() => { alert('Editing existing patients needs one more backend endpoint (PATCH /patients/{id}) — not wired yet.'); setEditingPatient(null); }}>Save Changes</button>
+              <button className="modal-submit" onClick={async () => {
+                try {
+                  const res = await fetch(`${BACKEND}/patients/${editingPatient.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({
+                      name: editingPatient.name,
+                      age: editingPatient.age ? parseInt(editingPatient.age, 10) : null,
+                      gender: editingPatient.gender,
+                      contact: editingPatient.contact
+                    })
+                  });
+                  if (!res.ok) throw new Error('Failed to update patient');
+                  await fetchPatients();
+                } catch (err) {
+                  setError('Could not save changes. Please try again.');
+                } finally {
+                  setEditingPatient(null);
+                }
+              }}>Save Changes</button>
             </div>
           </div>
         </div>
