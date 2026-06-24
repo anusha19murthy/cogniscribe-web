@@ -41,8 +41,14 @@ function Dashboard({ doctor, onLogout }) {
     }
   };
 
+  const [showValidation, setShowValidation] = useState(false);
+
   const addPatient = async () => {
-    if (!newPatient.name || !newPatient.reason) return;
+    if (!newPatient.name || !newPatient.reason) {
+      setShowValidation(true);
+      return;
+    }
+    setShowValidation(false);
     try {
       const res = await fetch(`${BACKEND}/patients`, {
         method: 'POST',
@@ -275,6 +281,18 @@ function Dashboard({ doctor, onLogout }) {
         <div className="modal-overlay" onClick={() => { setShowModal(false); setModalSearch(''); setNewPatient({ name: '', age: '', gender: 'Male', reason: '' }); }}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h3>Register New Patient</h3>
+            <div className="form-group">
+              <label>Patient Name</label>
+              <input
+                value={newPatient.name}
+                onChange={e => setNewPatient({...newPatient, name: e.target.value})}
+                placeholder="Full name"
+                style={{border: showValidation && !newPatient.name ? '1px solid #ef4444' : '1px solid #e0e0e0'}}
+              />
+              {showValidation && !newPatient.name && (
+                <div style={{fontSize:'11px', color:'#ef4444', marginTop:'4px'}}>Patient name is required</div>
+              )}
+            </div>
             <div style={{marginBottom:'16px', position:'relative'}}>
               <input type="text" placeholder="Search existing patients..." value={modalSearch} onChange={e => setModalSearch(e.target.value)}
                 style={{width:'100%', padding:'9px 10px', border:'1px solid #e0e0e0', borderRadius:'8px', fontSize:'14px', outline:'none', boxSizing:'border-box', background:'#f8f9fc'}} />
@@ -305,8 +323,17 @@ function Dashboard({ doctor, onLogout }) {
                 <option>Male</option><option>Female</option><option>Other</option>
               </select>
             </div>
-            <div className="form-group"><label>Reason for Visit</label>
-              <input value={newPatient.reason} onChange={e => setNewPatient({...newPatient, reason: e.target.value})} placeholder="e.g. Fever and cold" />
+            <div className="form-group">
+              <label>Reason for Visit</label>
+              <input
+                value={newPatient.reason}
+                onChange={e => setNewPatient({...newPatient, reason: e.target.value})}
+                placeholder="e.g. Fever and cold"
+                style={{border: showValidation && !newPatient.reason ? '1px solid #ef4444' : '1px solid #e0e0e0'}}
+              />
+              {showValidation && !newPatient.reason && (
+                <div style={{fontSize:'11px', color:'#ef4444', marginTop:'4px'}}>Reason for visit is required</div>
+              )}
             </div>
             <div className="modal-actions">
               <button className="modal-cancel" onClick={() => { setShowModal(false); setModalSearch(''); setNewPatient({ name: '', age: '', gender: 'Male', reason: '' }); }}>Cancel</button>
