@@ -430,6 +430,17 @@ useEffect(() => {
             {loading ? 'Please wait...' : mode === 'register' ? 'Create Account' : 'Sign In'}
           </button>
 
+          {mode === 'login' && (
+            <div style={{ textAlign: 'center', marginTop: '12px' }}>
+              <a
+                href="mailto:anusha19murthy@gmail.com?subject=CogniScribe Password Reset&body=Hi, I forgot my password for my CogniScribe account. My email is:%0A%0A"
+                style={{ fontSize: '13px', color: '#2563eb', textDecoration: 'none' }}
+              >
+                Forgot password? Contact support
+              </a>
+            </div>
+          )}
+
         </form>
       </div>
     </div>
