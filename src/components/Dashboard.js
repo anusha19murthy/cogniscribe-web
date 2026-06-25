@@ -238,11 +238,12 @@ function Dashboard({ doctor, onLogout }) {
         color: '#aaa',
         borderTop: '1px solid #f0f0f0'
       }}>
-        
-          href="mailto:YOUR_EMAIL_HERE@gmail.com?subject=CogniScribe Issue Report&body=Describe what happened:%0A%0A"
+        <a> 
+href="mailto:YOUR_EMAIL_HERE@gmail.com?subject=CogniScribe Issue Report&body=Describe what happened:%0A%0A"
           style={{ color: '#aaa', textDecoration: 'none' }}
         
           Report an Issue
+        </a>
         
       </div>
       {editingPatient && (
