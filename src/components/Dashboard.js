@@ -231,7 +231,20 @@ function Dashboard({ doctor, onLogout }) {
           </div>
         </div>
       </div>
-
+<div style={{
+        textAlign: 'center',
+        padding: '12px',
+        fontSize: '12px',
+        color: '#aaa',
+        borderTop: '1px solid #f0f0f0'
+      }}>
+        
+          href="mailto:YOUR_EMAIL_HERE@gmail.com?subject=CogniScribe Issue Report&body=Describe what happened:%0A%0A"
+          style={{ color: '#aaa', textDecoration: 'none' }}
+        
+          Report an Issue
+        
+      </div>
       {editingPatient && (
         <div className="modal-overlay" onClick={() => setEditingPatient(null)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
