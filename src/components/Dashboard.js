@@ -182,6 +182,11 @@ function Dashboard({ doctor, onLogout }) {
               })}
             </div>
           </div>
+          <div style={{ textAlign: 'center', padding: '12px', fontSize: '12px', color: '#aaa', borderTop: '1px solid #f0f0f0', marginTop: '12px' }}>
+            <a href="mailto:anusha19murthy@gmail.com?subject=CogniScribe Issue Report&body=Describe what happened:%0A%0A" style={{ color: '#aaa', textDecoration: 'none' }}>
+              Report an Issue
+            </a>
+          </div>
         </div>
         <div className="main-content" style={{flex:1, overflowY:'auto'}}>
           <div className="no-patient-selected"><h2>No patient selected.</h2><p>Select a patient from the list to begin.</p></div>
@@ -230,11 +235,6 @@ function Dashboard({ doctor, onLogout }) {
             )}
           </div>
         </div>
-      </div>
-      <div style={{ textAlign: 'center', padding: '12px', fontSize: '12px', color: '#aaa', borderTop: '1px solid #f0f0f0' }}>
-        <a href="mailto:anusha19murthy@gmail.com?subject=CogniScribe Issue Report&body=Describe what happened:%0A%0A" style={{ color: '#aaa', textDecoration: 'none' }}>
-          Report an Issue
-        </a>
       </div>
       {editingPatient && (
         <div className="modal-overlay" onClick={() => setEditingPatient(null)}>
