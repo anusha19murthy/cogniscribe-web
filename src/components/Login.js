@@ -141,7 +141,7 @@ useEffect(() => {
         <div className="login-card">
           <div className="login-logo">
             <img src={require('../logo.jpeg')} alt="CogniScribe" />
-            <p>AI Medical Scribe — Doctor First</p>
+            <p>AI Medical Scribe- Doctor First</p>
           </div>
 
           {error && <div className="error-banner">{error}</div>}
