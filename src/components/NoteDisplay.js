@@ -391,12 +391,36 @@ function NoteDisplay({ doctor, onLogout }) {
                 </div>
                 <div className="note-section">
                   <h3>Vitals</h3>
-                  <div className="note-field">
-                    <label>BP / Pulse / Temp / SpO2</label>
-                    <div className="note-field-value">
-                      {[editedNote.vitals?.bp, editedNote.vitals?.pulse, editedNote.vitals?.temperature, editedNote.vitals?.spo2].filter(Boolean).join(' | ') || '—'}
-                    </div>
-                  </div>
+                  {['bp', 'pulse', 'temperature', 'spo2'].map(key => {
+                    const labels = { bp: 'BP', pulse: 'Pulse', temperature: 'Temp', spo2: 'SpO2' };
+                    const fieldKey = `vitals_${key}`;
+                    const value = editedNote.vitals?.[key];
+                    return (
+                      <div className="note-field" key={key}>
+                        <label>{labels[key]}</label>
+                        {editField === fieldKey ? (
+                          <input
+                            defaultValue={value || ''}
+                            onBlur={e => {
+                              setEditedNote({
+                                ...editedNote,
+                                vitals: { ...editedNote.vitals, [key]: e.target.value }
+                              });
+                              setEditField(null);
+                            }}
+                            autoFocus
+                          />
+                        ) : (
+                          <div
+                            className="note-field-value"
+                            onClick={() => setEditField(fieldKey)}
+                          >
+                            {value || <span style={{color:'#ccc'}}>Tap to add</span>}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="note-section">
                   <h3>Examination & Investigations</h3>
@@ -416,18 +440,61 @@ function NoteDisplay({ doctor, onLogout }) {
                       />
                     ) : editedNote.diagnosis || '—'}
                   </div>
-                  {editedNote.medications?.length > 0 && (
-                    <div className="note-field" style={{marginTop:'12px'}}>
-                      <label>Medications</label>
-                      {editedNote.medications.map((m, i) => (
-                        <div className="med-row" key={i}>
-                          <span>{m.name}</span>
-                          <span>{m.dose || '—'}</span>
-                          <span>{m.frequency || '—'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div className="note-field" style={{marginTop:'12px'}}>
+                    <label>Medications</label>
+                    {(editedNote.medications || []).map((m, i) => (
+                      <div className="med-row" key={i} style={{display:'flex', gap:'8px', alignItems:'center', marginBottom:'6px'}}>
+                        <input
+                          defaultValue={m.name || ''}
+                          placeholder="Name"
+                          onBlur={e => {
+                            const updated = [...editedNote.medications];
+                            updated[i] = { ...updated[i], name: e.target.value };
+                            setEditedNote({ ...editedNote, medications: updated });
+                          }}
+                          style={{flex: 2, padding: '6px 8px', border: '1px solid #e0e0e0', borderRadius: '6px', fontSize: '13px'}}
+                        />
+                        <input
+                          defaultValue={m.dose || ''}
+                          placeholder="Dose"
+                          onBlur={e => {
+                            const updated = [...editedNote.medications];
+                            updated[i] = { ...updated[i], dose: e.target.value };
+                            setEditedNote({ ...editedNote, medications: updated });
+                          }}
+                          style={{flex: 1, padding: '6px 8px', border: '1px solid #e0e0e0', borderRadius: '6px', fontSize: '13px'}}
+                        />
+                        <input
+                          defaultValue={m.frequency || ''}
+                          placeholder="Frequency"
+                          onBlur={e => {
+                            const updated = [...editedNote.medications];
+                            updated[i] = { ...updated[i], frequency: e.target.value };
+                            setEditedNote({ ...editedNote, medications: updated });
+                          }}
+                          style={{flex: 1, padding: '6px 8px', border: '1px solid #e0e0e0', borderRadius: '6px', fontSize: '13px'}}
+                        />
+                        <button
+                          onClick={() => {
+                            const updated = editedNote.medications.filter((_, idx) => idx !== i);
+                            setEditedNote({ ...editedNote, medications: updated });
+                          }}
+                          style={{background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '16px', padding: '4px 8px'}}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => {
+                        const updated = [...(editedNote.medications || []), { name: '', dose: '', frequency: '' }];
+                        setEditedNote({ ...editedNote, medications: updated });
+                      }}
+                      style={{background: 'none', border: '1px dashed #2563eb', color: '#2563eb', borderRadius: '6px', padding: '6px 12px', fontSize: '13px', cursor: 'pointer', marginTop: '4px'}}
+                    >
+                      + Add Medication
+                    </button>
+                  </div>
                   {renderField('Advice', 'advice', true)}
                   {renderField('Follow Up', 'follow_up')}
                 </div>
